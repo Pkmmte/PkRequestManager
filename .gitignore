@@ -12,8 +12,16 @@
 bin/
 gen/
 
+# External libraries
+libs/
+
+# Manifest file (not needed in this library)
+AndroidManifest.xml
+
 # Local configuration file (sdk path, etc)
 local.properties
+project.properties
+proguard-project.txt
 
 # Eclipse project files
 .classpath
