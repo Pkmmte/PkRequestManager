@@ -24,15 +24,13 @@
 
 package com.pk.requestmanager;
 
-import android.content.Intent;
-
 /**
  * A listener that notifies you when a specific event is going on
- * regarding sending a request.
+ * regarding loading installed apps.
  */
-public interface OnSendRequestListener
+public interface InstalledAppLoadListener
 {
-	public void onRequestStart(boolean automatic);
-	public void onRequestBuild(boolean automatic, int progress);
-	public void onRequestFinished(boolean automatic, boolean intentSuccessful, Intent intent);
+	public void onInstalledAppsPreload();
+	public void onInstalledAppsLoading(int progress);
+	public void onInstalledAppsLoaded();
 }

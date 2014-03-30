@@ -117,10 +117,10 @@ public class PkRequestManager extends Static
 	private AsyncTask<Void, Void, Void> automaticTask;
 	
 	// Listeners for various loading events
-	private List<OnInstalledAppInfoLoadListener> mOnInstalledAppInfoLoadListeners;
-	private List<OnAppFilterListener> mOnAppFilterListeners;
-	private List<OnAppInfoLoadListener> mOnAppInfoLoadListeners;
-	private List<OnSendRequestListener> mOnSendRequestListeners;
+	private List<InstalledAppLoadListener> mInstalledAppLoadListeners;
+	private List<AppFilterListener> mAppFilterListeners;
+	private List<AppLoadListener> mAppLoadListeners;
+	private List<SendRequestListener> mSendRequestListeners;
 	
 	/**
 	 * Creates a global RequestManager instance.
@@ -172,10 +172,10 @@ public class PkRequestManager extends Static
 		this.mApps = new ArrayList<AppInfo>();
 		this.mInstalledApps = new ArrayList<AppInfo>();
 		this.mDefinedApps = new ArrayList<String>();
-		this.mOnInstalledAppInfoLoadListeners = new ArrayList<OnInstalledAppInfoLoadListener>();
-		this.mOnAppFilterListeners = new ArrayList<OnAppFilterListener>();
-		this.mOnAppInfoLoadListeners = new ArrayList<OnAppInfoLoadListener>();
-		this.mOnSendRequestListeners = new ArrayList<OnSendRequestListener>();
+		this.mInstalledAppLoadListeners = new ArrayList<InstalledAppLoadListener>();
+		this.mAppFilterListeners = new ArrayList<AppFilterListener>();
+		this.mAppLoadListeners = new ArrayList<AppLoadListener>();
+		this.mSendRequestListeners = new ArrayList<SendRequestListener>();
 		this.initLoadingTask();
 		this.initSendTask();
 		this.initAutomaticTask();
@@ -316,7 +316,7 @@ public class PkRequestManager extends Static
 		}
 		
 		// Loop through all listeners notifying them
-        for(OnSendRequestListener mListener : mOnSendRequestListeners) {
+        for(SendRequestListener mListener : mSendRequestListeners) {
         	mListener.onRequestStart(automatic);
         }
 		
@@ -358,7 +358,7 @@ public class PkRequestManager extends Static
 		for(AppInfo mAppInfo : mAppList) {
 			// Loop through all listeners notifying them
 			progress = (int) (mAppList.indexOf(mAppInfo) * MAX_PROGRESS) / numApps;
-	        for(OnSendRequestListener mListener : mOnSendRequestListeners) {
+	        for(SendRequestListener mListener : mSendRequestListeners) {
 	        	mListener.onRequestBuild(automatic, progress);
 	        }
 			
@@ -486,7 +486,7 @@ public class PkRequestManager extends Static
 		}
 		
 		// Loop through all listeners notifying them
-        for(OnSendRequestListener mListener : mOnSendRequestListeners) {
+        for(SendRequestListener mListener : mSendRequestListeners) {
         	mListener.onRequestFinished(automatic, intentSuccessful, intent);
         }
 	}
@@ -573,115 +573,115 @@ public class PkRequestManager extends Static
 	}
 	
 	/**
-	 * Adds an OnInstalledAppInfoLoadListener to this global instance.
+	 * Adds an InstalledAppLoadListener to this global instance.
 	 * 
 	 * @param listener
 	 */
-	public void addOnInstalledAppInfoLoadListener(OnInstalledAppInfoLoadListener listener)
+	public void addInstalledAppLoadListener(InstalledAppLoadListener listener)
 	{
-		mOnInstalledAppInfoLoadListeners.add(listener);
+		mInstalledAppLoadListeners.add(listener);
 	}
 	
 	/**
-	 * Removes an OnInstalledAppInfoLoadListener from this global instance.
+	 * Removes an InstalledAppLoadListener from this global instance.
 	 * 
 	 * @param listener
 	 */
-	public void removeOnInstalledAppInfoLoadListener(OnInstalledAppInfoLoadListener listener)
+	public void removeInstalledAppLoadListener(InstalledAppLoadListener listener)
 	{
-		mOnInstalledAppInfoLoadListeners.remove(listener);
+		mInstalledAppLoadListeners.remove(listener);
 	}
 	
 	/**
-	 * Removes all OnInstalledAppInfoLoadListeners from this global instance.
+	 * Removes all InstalledAppLoadListeners from this global instance.
 	 */
-	public void removeAllOnInstalledAppInfoLoadListeners()
+	public void removeAllInstalledAppLoadListeners()
 	{
-		mOnInstalledAppInfoLoadListeners.clear();
+		mInstalledAppLoadListeners.clear();
 	}
 	
 	/**
-	 * Adds an OnAppFilterListener to this global instance.
+	 * Adds an AppFilterListener to this global instance.
 	 * 
 	 * @param listener
 	 */
-	public void addOnAppFilterListener(OnAppFilterListener listener)
+	public void addAppFilterListener(AppFilterListener listener)
 	{
-		mOnAppFilterListeners.add(listener);
+		mAppFilterListeners.add(listener);
 	}
 	
 	/**
-	 * Removes an OnAppFilterListener from this global instance.
+	 * Removes an AppFilterListener from this global instance.
 	 * 
 	 * @param listener
 	 */
-	public void removeOnAppFilterListener(OnAppFilterListener listener)
+	public void removeAppFilterListener(AppFilterListener listener)
 	{
-		mOnAppFilterListeners.remove(listener);
+		mAppFilterListeners.remove(listener);
 	}
 	
 	/**
-	 * Removes all OnAppFilterListeners from this global instance.
+	 * Removes all AppFilterListeners from this global instance.
 	 */
-	public void removeAllOnAppFilterListeners()
+	public void removeAllAppFilterListeners()
 	{
-		mOnAppFilterListeners.clear();
+		mAppFilterListeners.clear();
 	}
 	
 	/**
-	 * Adds an OnAppInfoLoadListener to this global instance.
+	 * Adds an AppLoadListener to this global instance.
 	 * 
 	 * @param listener
 	 */
-	public void addOnAppInfoLoadListener(OnAppInfoLoadListener listener)
+	public void addAppLoadListener(AppLoadListener listener)
 	{
-		mOnAppInfoLoadListeners.add(listener);
+		mAppLoadListeners.add(listener);
 	}
 	
 	/**
-	 * Removes an OnAppInfoLoadListener from this global instance.
+	 * Removes an AppLoadListener from this global instance.
 	 * 
 	 * @param listener
 	 */
-	public void removeOnAppInfoLoadListener(OnAppInfoLoadListener listener)
+	public void removeAppLoadListener(AppLoadListener listener)
 	{
-		mOnAppInfoLoadListeners.remove(listener);
+		mAppLoadListeners.remove(listener);
 	}
 	
 	/**
-	 * Removes all OnAppFilterListeners from this global instance.
+	 * Removes all AppFilterListeners from this global instance.
 	 */
-	public void removeAllOnAppInfoLoadListeners()
+	public void removeAllAppInfoLoadListeners()
 	{
-		mOnAppInfoLoadListeners.clear();
+		mAppLoadListeners.clear();
 	}
 	
 	/**
-	 * Adds an OnSendRequestListener to this global instance.
+	 * Adds an SendRequestListener to this global instance.
 	 * 
 	 * @param listener
 	 */
-	public void addOnSendRequestListener(OnSendRequestListener listener)
+	public void addSendRequestListener(SendRequestListener listener)
 	{
-		mOnSendRequestListeners.add(listener);
+		mSendRequestListeners.add(listener);
 	}
 	
 	/**
-	 * Removes an OnSendRequestListener from this global instance.
+	 * Removes an SendRequestListener from this global instance.
 	 * 
 	 * @param listener
 	 */
-	public void removeOnSendRequestListener(OnSendRequestListener listener)
+	public void removeSendRequestListener(SendRequestListener listener)
 	{
-		mOnSendRequestListeners.remove(listener);
+		mSendRequestListeners.remove(listener);
 	}
 	
 	/**
-	 * Removes all OnSendRequestListeners from this global instance.
+	 * Removes all SendRequestListeners from this global instance.
 	 */
-	public void removeAllOnSendRequestListeners()
+	public void removeAllSendRequestListeners()
 	{
-		mOnSendRequestListeners.clear();
+		mSendRequestListeners.clear();
 	}
 	
 	/**
@@ -689,10 +689,10 @@ public class PkRequestManager extends Static
 	 */
 	public void removeAllListeners()
 	{
-		mOnInstalledAppInfoLoadListeners.clear();
-		mOnAppFilterListeners.clear();
-		mOnAppInfoLoadListeners.clear();
-		mOnSendRequestListeners.clear();
+		mInstalledAppLoadListeners.clear();
+		mAppFilterListeners.clear();
+		mAppLoadListeners.clear();
+		mSendRequestListeners.clear();
 	}
 	
 	/**
@@ -897,7 +897,7 @@ public class PkRequestManager extends Static
 			mParser.setInput(inputStream, null);
 			
 			// Loop through all listeners notifying them
-	        for(OnAppFilterListener mListener : mOnAppFilterListeners) {
+	        for(AppFilterListener mListener : mAppFilterListeners) {
 	        	mListener.onAppPrefilter();
 	        }
 			
@@ -939,10 +939,10 @@ public class PkRequestManager extends Static
 						count++;
 						progress = (int) (count * MAX_PROGRESS) / numElements;
 						// Loop through all listeners notifying them
-						for(OnAppInfoLoadListener mListener : mOnAppInfoLoadListeners) {
+						for(AppLoadListener mListener : mAppLoadListeners) {
 				        	mListener.onAppLoading(STATUS_LOADING_APPFILTER, (int) ((MAX_PROGRESS / 3) + (progress / 3)));
 				        }
-				        for(OnAppFilterListener mListener : mOnAppFilterListeners) {
+				        for(AppFilterListener mListener : mAppFilterListeners) {
 				        	mListener.onAppFiltering(progress, 0);
 				        }
 						try	{
@@ -993,15 +993,15 @@ public class PkRequestManager extends Static
 		Collections.sort(packages, new ApplicationInfo.DisplayNameComparator(pm));
 		
 		// Loop through all listeners notifying them
-		for(OnAppInfoLoadListener mListener : mOnAppInfoLoadListeners) {
+		for(AppLoadListener mListener : mAppLoadListeners) {
         	mListener.onAppLoading(STATUS_PRELOAD, 0);
         }
-        for(OnAppInfoLoadListener mListener : mOnAppInfoLoadListeners) {
+        for(AppLoadListener mListener : mAppLoadListeners) {
         	mListener.onAppPreload();
         }
 		
 		// Loop through all listeners notifying them
-        for(OnInstalledAppInfoLoadListener mListener : mOnInstalledAppInfoLoadListeners) {
+        for(InstalledAppLoadListener mListener : mInstalledAppLoadListeners) {
         	mListener.onInstalledAppsPreload();
         }
 		
@@ -1024,10 +1024,10 @@ public class PkRequestManager extends Static
 							.equals("")) {
 				// Loop through all listeners notifying them
 				progress = (int) (packages.indexOf(packageInfo) * MAX_PROGRESS) / numPackages;
-		        for(OnAppInfoLoadListener mListener : mOnAppInfoLoadListeners) {
+		        for(AppLoadListener mListener : mAppLoadListeners) {
 		        	mListener.onAppLoading(STATUS_LOADING_INSTALLED, filterDefined ? (int)(progress / 3) : progress);
 		        }
-		        for(OnInstalledAppInfoLoadListener mListener : mOnInstalledAppInfoLoadListeners) {
+		        for(InstalledAppLoadListener mListener : mInstalledAppLoadListeners) {
 		        	mListener.onInstalledAppsLoading(progress);
 		        }
 				
@@ -1061,11 +1061,11 @@ public class PkRequestManager extends Static
 		}
 		
 		// Loop through all listeners notifying them
-        for(OnInstalledAppInfoLoadListener mListener : mOnInstalledAppInfoLoadListeners) {
+        for(InstalledAppLoadListener mListener : mInstalledAppLoadListeners) {
         	mListener.onInstalledAppsLoaded();
         }
         if(!filterDefined) {
-        	for(OnAppInfoLoadListener mListener : mOnAppInfoLoadListeners) {
+        	for(AppLoadListener mListener : mAppLoadListeners) {
             	mListener.onAppLoading(STATUS_LOADED, MAX_PROGRESS);
             }
         }
@@ -1086,10 +1086,10 @@ public class PkRequestManager extends Static
 		for(AppInfo mAppInfo : mInstalledApps) {
 			// Loop through all listeners notifying them
 			progress = (int) (mInstalledApps.indexOf(mAppInfo) * MAX_PROGRESS) / numApps;
-			for(OnAppInfoLoadListener mListener : mOnAppInfoLoadListeners) {
+			for(AppLoadListener mListener : mAppLoadListeners) {
 	        	mListener.onAppLoading(STATUS_FILTERING, (int) ((MAX_PROGRESS / 3 * 2) + (progress / 3)));
 	        }
-			for(OnAppFilterListener mListener : mOnAppFilterListeners) {
+			for(AppFilterListener mListener : mAppFilterListeners) {
 	        	mListener.onAppFiltering(MAX_PROGRESS, progress);
 	        }
 			
@@ -1107,13 +1107,13 @@ public class PkRequestManager extends Static
 			Log.d(LOG_TAG, "Finished filtering apps!");
 		
 		// Loop through all listeners notifying them
-		for(OnAppInfoLoadListener mListener : mOnAppInfoLoadListeners) {
+		for(AppLoadListener mListener : mAppLoadListeners) {
         	mListener.onAppLoading(STATUS_LOADED, MAX_PROGRESS);
         }
-		for(OnAppInfoLoadListener mListener : mOnAppInfoLoadListeners) {
+		for(AppLoadListener mListener : mAppLoadListeners) {
         	mListener.onAppLoaded();
         }
-		for(OnAppFilterListener mListener : mOnAppFilterListeners) {
+		for(AppFilterListener mListener : mAppFilterListeners) {
         	mListener.onAppFiltered();
         }
 	}

@@ -26,11 +26,11 @@ package com.pk.requestmanager;
 
 /**
  * A listener that notifies you when a specific event is going on
- * regarding filtering apps.
+ * regarding overall app loading.
  */
-public interface OnAppFilterListener
+public interface AppLoadListener
 {
-	public void onAppPrefilter();
-	public void onAppFiltering(int appfilterProgress, int filterProgress);
-	public void onAppFiltered();
+	public void onAppPreload();
+	public void onAppLoading(int status, int progress);
+	public void onAppLoaded();
 }
