@@ -112,9 +112,9 @@ public class PkRequestManager extends Static
 	private List<String>  mDefinedApps;
 	
 	// Background threads
-	private AsyncTask<Void, Void, Void> loadingTask;
+	private AsyncTask<Void, Void, Void> loadTask;
 	private AsyncTask<Void, Void, Void> sendTask;
-	private AsyncTask<Void, Void, Void> automaticTask;
+	private AsyncTask<Void, Void, Void> autoTask;
 	
 	// Listeners for various loading events
 	private List<InstalledAppLoadListener> mInstalledAppLoadListeners;
@@ -202,7 +202,7 @@ public class PkRequestManager extends Static
 	}
 	
 	/**
-	 * Exactly like "loadApps()" but runs in it's own background thread.
+	 * Exactly like "loadApps()" but runs in it's own parallel background thread.
 	 * <p>
 	 * Loads all apps installed on the device asynchronously. This will also filter 
 	 * those already in the appfilter if you have that enabled in settings. 
@@ -210,21 +210,36 @@ public class PkRequestManager extends Static
 	 */
 	public void loadAppsAsync()
 	{
-		if(loadingTask.getStatus() == AsyncTask.Status.PENDING) {
+		loadAppsAsync(true);
+	}
+	
+	/**
+	 * Exactly like "loadApps()" but runs in it's own background thread.
+	 * <p>
+	 * Loads all apps installed on the device asynchronously. This will also filter 
+	 * those already in the appfilter if you have that enabled in settings. 
+	 * All progress is reported via listeners.
+	 * 
+	 * @param parallel	Boolean indicating whether to run serially or in parallel. 
+	 * 					True for parallel, False for serial.
+	 */
+	public void loadAppsAsync(boolean parallel)
+	{
+		if(loadTask.getStatus() == AsyncTask.Status.PENDING) {
 			// Execute task if it's ready to go!
-			loadingTask.execute();
+			loadTask.executeOnExecutor(parallel ? AsyncTask.THREAD_POOL_EXECUTOR : AsyncTask.SERIAL_EXECUTOR);
 		}
-		else if(loadingTask.getStatus() == AsyncTask.Status.RUNNING && debugEnabled) {
+		else if(loadTask.getStatus() == AsyncTask.Status.RUNNING && debugEnabled) {
 			// Don't execute if already running
 			Log.d(LOG_TAG, "Task is already running...");
 		}
-		else if(loadingTask.getStatus() == AsyncTask.Status.FINISHED) {
+		else if(loadTask.getStatus() == AsyncTask.Status.FINISHED) {
 			// Okay, this is not supposed to happen. Reset and recall.
 			if(debugEnabled)
 				Log.d(LOG_TAG, "Uh oh, it appears the task has finished without being reset. Resetting task...");
 			
 			initLoadingTask();
-			loadAppsAsync();
+			loadAppsAsync(parallel);
 		}
 	}
 	
@@ -492,7 +507,7 @@ public class PkRequestManager extends Static
 	}
 	
 	/**
-	 * Exactly like "sendRequest()" but runs in it's own background thread.
+	 * Exactly like "sendRequest()" but runs in it's own parallel background thread.
 	 * <p>
 	 * Sends a request via email. This will return prematurely if no emails have 
 	 * been set in your settings or if no apps were selected. Data sent depends on 
@@ -505,9 +520,29 @@ public class PkRequestManager extends Static
 	 */
 	public void sendRequestAsync()
 	{
+		sendRequestAsync(true);
+	}
+	
+	/**
+	 * Exactly like "sendRequest()" but runs in it's own background thread.
+	 * <p>
+	 * Sends a request via email. This will return prematurely if no emails have 
+	 * been set in your settings or if no apps were selected. Data sent depends on 
+	 * your settings. All progress is reported via listeners.
+	 * <p>
+	 * Note: The send intent won't run immediately on some devices. As a hacky workaround, 
+	 * make sure to "setActivity()" right before running this. The listener also passes the 
+	 * send intent along with all the data attached to it. Manually launch the intent if you 
+	 * prefer not to attach the activity.
+	 * 
+	 * @param parallel	Boolean indicating whether to run serially or in parallel. 
+	 * 					True for parallel, False for serial.
+	 */
+	public void sendRequestAsync(boolean parallel)
+	{
 		if(sendTask.getStatus() == AsyncTask.Status.PENDING) {
 			// Execute task if it's ready to go!
-			sendTask.execute();
+			sendTask.executeOnExecutor(parallel ? AsyncTask.THREAD_POOL_EXECUTOR : AsyncTask.SERIAL_EXECUTOR);
 		}
 		else if(sendTask.getStatus() == AsyncTask.Status.RUNNING && debugEnabled) {
 			// Don't execute if already running
@@ -519,7 +554,7 @@ public class PkRequestManager extends Static
 				Log.d(LOG_TAG, "Uh oh, it appears the task has finished without being reset. Resetting task...");
 			
 			initSendTask();
-			sendRequestAsync();
+			sendRequestAsync(parallel);
 		}
 	}
 	
@@ -547,28 +582,42 @@ public class PkRequestManager extends Static
 	}
 	
 	/**
-	 * Exactly like "sendAutomaticRequest()" but runs on it's own background thread.
+	 * Exactly like "sendAutomaticRequest()" but runs on it's own parallel background thread.
 	 * <p>
 	 * Automatically loads all app information (if not already) and sends it. 
 	 * Data being sent depends on your settings.
 	 */
 	public void sendAutomaticRequestAsync()
 	{
-		if(automaticTask.getStatus() == AsyncTask.Status.PENDING) {
+		sendAutomaticRequestAsync(true);
+	}
+	
+	/**
+	 * Exactly like "sendAutomaticRequest()" but runs on it's own background thread.
+	 * <p>
+	 * Automatically loads all app information (if not already) and sends it. 
+	 * Data being sent depends on your settings.
+	 * 
+	 * @param parallel	Boolean indicating whether to run serially or in parallel. 
+	 * 					True for parallel, False for serial.
+	 */
+	public void sendAutomaticRequestAsync(boolean parallel)
+	{
+		if(autoTask.getStatus() == AsyncTask.Status.PENDING) {
 			// Execute task if it's ready to go!
-			automaticTask.execute();
+			autoTask.executeOnExecutor(parallel ? AsyncTask.THREAD_POOL_EXECUTOR : AsyncTask.SERIAL_EXECUTOR);
 		}
-		else if(automaticTask.getStatus() == AsyncTask.Status.RUNNING && debugEnabled) {
+		else if(autoTask.getStatus() == AsyncTask.Status.RUNNING && debugEnabled) {
 			// Don't execute if already running
 			Log.d(LOG_TAG, "Task is already running...");
 		}
-		else if(automaticTask.getStatus() == AsyncTask.Status.FINISHED) {
+		else if(autoTask.getStatus() == AsyncTask.Status.FINISHED) {
 			// Okay, this is not supposed to happen. Reset and recall.
 			if(debugEnabled)
 				Log.d(LOG_TAG, "Uh oh, it appears the task has finished without being reset. Resetting task...");
 			
 			initAutomaticTask();
-			sendAutomaticRequestAsync();
+			sendAutomaticRequestAsync(parallel);
 		}
 	}
 	
@@ -724,7 +773,7 @@ public class PkRequestManager extends Static
 	 */
 	public void cancelLoadingTask(boolean mayInterruptIfRunning)
 	{
-		this.loadingTask.cancel(mayInterruptIfRunning);
+		this.loadTask.cancel(mayInterruptIfRunning);
 		this.initLoadingTask();
 	}
 
@@ -760,7 +809,7 @@ public class PkRequestManager extends Static
 	 */
 	public void cancelAutomaticTask(boolean mayInterruptIfRunning)
 	{
-		this.automaticTask.cancel(mayInterruptIfRunning);
+		this.autoTask.cancel(mayInterruptIfRunning);
 		this.initAutomaticTask();
 	}
 	
@@ -1310,7 +1359,7 @@ public class PkRequestManager extends Static
 	 */
 	private void initLoadingTask()
 	{
-		this.loadingTask = new AsyncTask<Void, Void, Void>() {
+		this.loadTask = new AsyncTask<Void, Void, Void>() {
 			@Override
 			protected Void doInBackground(Void... params) {
 				loadApps();
@@ -1352,7 +1401,7 @@ public class PkRequestManager extends Static
 	 */
 	private void initAutomaticTask()
 	{
-		this.automaticTask = new AsyncTask<Void, Void, Void>() {
+		this.autoTask = new AsyncTask<Void, Void, Void>() {
 			@Override
 			protected Void doInBackground(Void... params) {
 				sendAutomaticRequest();
