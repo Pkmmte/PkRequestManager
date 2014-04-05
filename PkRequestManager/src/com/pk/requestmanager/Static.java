@@ -24,9 +24,31 @@
 
 package com.pk.requestmanager;
 
+import java.util.List;
+
 class Static {
 	// TODO Create static convenience methods here
 	public static void meow(){
 		
+	}
+	
+	/**
+	 * <bold>Convenience Method</bold><p>
+	 * 
+	 * Simple function that returns an integer count 
+	 * with the total number of apps currently selected.
+	 * 
+	 * @param mApps
+	 * @return int
+	 */
+	public static int getNumSelected(List<AppInfo> mApps)
+	{
+		int count = 0;
+		for(AppInfo mApp : mApps) {
+			if(mApp.isSelected())
+				count++;
+		}
+		
+		return count;
 	}
 }

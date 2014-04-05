@@ -83,6 +83,7 @@ public class PkRequestManager extends Static
 	public static final CompressFormat PNG = CompressFormat.PNG;
 	public static final CompressFormat JPEG = CompressFormat.JPEG;
 	public static final CompressFormat WEBP = CompressFormat.WEBP;
+	public static final String PLAY_LINK_BASE = "https://play.google.com/store/apps/details?id=";
 	public static final int MAX_PROGRESS = 100;
 	public static final int STATUS_PRELOAD = 0;
 	public static final int STATUS_LOADING_INSTALLED = 1;
@@ -319,7 +320,7 @@ public class PkRequestManager extends Static
 		// Check to see if data being set is valid.
 		if(mAppList == null || mAppList.size() == 0) {
 			if(debugEnabled)
-				Log.d(LOG_TAG, "App ListArray is either null or empty! Canceling send request...");
+				Log.d(LOG_TAG, "App List is either null or empty! Canceling send request...");
 			return;
 		}
 		
@@ -351,18 +352,11 @@ public class PkRequestManager extends Static
 		StringBuilder emailBuilder = new StringBuilder();
 		StringBuilder xmlBuilder = new StringBuilder();
 		
-		// Append email precontent and device information (if enabled)
+		// Append email precontent (if enabled)
 		if(debugEnabled)
 			Log.d(LOG_TAG, "Appending email precontent" + (appendInformation ? " and device information" : ""));
 		
 		emailBuilder.append(emailPrecontent);
-		if(appendInformation) {
-			emailBuilder.append("\nOS Version: " + System.getProperty("os.version") + "(" + Build.VERSION.INCREMENTAL + ")");
-			emailBuilder.append("\nOS API Level: " + Build.VERSION.SDK_INT);
-			emailBuilder.append("\nDevice: " + Build.DEVICE);
-			emailBuilder.append("\nManufacturer: " + Build.MANUFACTURER);
-			emailBuilder.append("\nModel (and Product): " + Build.MODEL + " (" + Build.PRODUCT + ")");
-		}
 		
 		// Loop through all selected app packages
 		if(debugEnabled)
@@ -380,7 +374,10 @@ public class PkRequestManager extends Static
 			// Only deal with selected apps
 			if(selectAll || mAppInfo.isSelected()) {
 				// Build email content
-				emailBuilder.append(mAppInfo.getName() + "\n");
+				emailBuilder.append("Name: " + mAppInfo.getName() + "\n");
+				emailBuilder.append("Code: " + mAppInfo.getCode() + "\n");
+				emailBuilder.append("Link: " + PLAY_LINK_BASE + mAppInfo.getCode().split("/")[0] + "\n");
+				emailBuilder.append("\n\n");
 				
 				// Generate appfilter content (if enabled)
 				if(createAppfilter) {
@@ -417,6 +414,15 @@ public class PkRequestManager extends Static
 				// Increase our counter for number of apps selected
 				numSelected++;
 			}
+		}
+		
+		// Append device information (if enabled)
+		if(appendInformation) {
+			emailBuilder.append("\nOS Version: " + System.getProperty("os.version") + "(" + Build.VERSION.INCREMENTAL + ")");
+			emailBuilder.append("\nOS API Level: " + Build.VERSION.SDK_INT);
+			emailBuilder.append("\nDevice: " + Build.DEVICE);
+			emailBuilder.append("\nManufacturer: " + Build.MANUFACTURER);
+			emailBuilder.append("\nModel (and Product): " + Build.MODEL + " (" + Build.PRODUCT + ")");
 		}
 		
 		// Return if no apps were selected
@@ -878,6 +884,25 @@ public class PkRequestManager extends Static
 	public List<String> getDefinedApps()
 	{
 		return this.mDefinedApps;
+	}
+	
+	/**
+	 * Returns an integer count with the total number of 
+	 * apps currently selected. This keeps in mind your settings 
+	 * and will not work if you don't have the proper reference.
+	 * 
+	 * @return int
+	 */
+	public int getNumSelected()
+	{
+		int count = 0;
+		List<AppInfo> mAppList = getApps();
+		for(AppInfo mApp : mAppList) {
+			if(mApp.isSelected())
+				count++;
+		}
+		
+		return count;
 	}
 	
 	/**
