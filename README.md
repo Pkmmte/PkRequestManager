@@ -94,6 +94,8 @@ mRequestManager.getApps();
 You can also call `getInstalledApps()` to get a list of unfiltered apps or `getDefinedApps()` to get a String list of apps defined in your appfilter.
 
 
+**Note:** I highly recommend loading apps asynchronously using the global instance from your MainActivity. That way the apps are already loaded when your request activity starts!
+
 
 ###Sending Request
 Just like loading, sending a request only requires one line of code.
@@ -109,7 +111,7 @@ mRequestManager.sendAutomaticRequest();
 ```
 Be sure to set any listeners to check the progress on this. As usual, I recommend you use `sendAutomaticRequestAsync()` instead.
 
-**Note:** Due to issues starting the sendRequest intent from a background thread, please use `mRequestManager.setActivity(this)` right before sending the request or manually start the intent from the `onRequestFinished` interface.
+**Important:** Due to issues starting the sendRequest intent from a background thread, please use `mRequestManager.setActivity(this)` right before sending the request or manually start the intent from the `onRequestFinished` interface.
 
 
 ###Event Listeners
@@ -121,6 +123,16 @@ The following event listeners are available:
 * SendRequestListener
 
 See more information about them in the [wiki][9].
+
+
+###Debugging
+You can enable debug log messages using this line:
+```java
+mRequestManager.setDebugging(true);
+```
+This shows significant events in your logcat and explains errors that may happen. (If any)
+Please don't leave this enable during production. You don't want to spam your user's logcat, do you?
+
 
 Developed By
 --------
