@@ -30,12 +30,12 @@ See the Quick Start guides for more information on how to achieve a simple integ
 * [Quick Start: Sending Request](https://github.com/Pkmmte/PkRequestManager/wiki)
 * [Quick Start: Listeners](https://github.com/Pkmmte/PkRequestManager/wiki)
 
-*This library requires the `WRITE_EXTERNAL_STORAGE` permission if you want to attach a .zip file containing requested app icons or a generated appfilter.xml!*
+**Important:** *This library requires the `WRITE_EXTERNAL_STORAGE` permission if you want to attach a .zip file containing requested app icons or a generated appfilter.xml!*
 ```xml
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 ```
 
-**Creating an instance_**
+##Creating an instance
 To be able to do anything, you first need to create an instance. 
 I suggest you make it a global instance for more efficient use and shorter loading times.
 
@@ -44,7 +44,7 @@ Called like this :
     PkRequestManager mRequestManager = PkRequestManager.getInstance(this);
 ```
 
-**Customize**
+##Customize
 This Manager class was made to be as flexible as possible. The only requirement is to set your email address(es). Everything else is set to default.
 ```java
     mRequestManager.setSettings(new RequestSettings.Builder()
@@ -67,8 +67,23 @@ This Manager class was made to be as flexible as possible. The only requirement 
 
 [See here][3] for more.
 
-**Loading apps_**
 
+##Loading apps
+To load a list of apps, all you need to do is call the `loadApps()` method like so:
+```java
+    mRequestManager.loadApps();
+```
+This will keep in mind your settings and filter out any apps if you have `filterDefined` enabled.
+Loading can take a while if the user has hundreds or thousands of apps installed so make sure to call it from a background thread. You can also call the `Async` variant of the method.
+```java
+    mRequestManager.loadAppsAsync();
+```
+This will load apps in a parallel background thread. It's safe to call this multiple times at once. The PkRequestManager only executes it if it's not already running.
+
+You can also choose to load apps only if they're not already loaded with the following line of code:
+```java
+    mRequestManager.loadAppsIfEmpty();
+```
 
 
 Developed By
@@ -113,3 +128,4 @@ License
 
  [1]: http://pkmmte.com//TODO
  [2]: http://pkmmte.com//TODO
+ [3]: http://pkmmte.com//TODO
