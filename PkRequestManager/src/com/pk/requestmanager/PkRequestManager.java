@@ -392,14 +392,16 @@ public class PkRequestManager extends Static
 					
 					// Write bitmap to storage as PNG
 					try {
-						FileOutputStream fOut = new FileOutputStream(saveLoc2 + "/" + mAppInfo.getCode().split("/")[0] + "_" + mAppInfo.getCode().split("/")[1]+ ".png");
+						String bmDir = saveLoc2 + "/" + mAppInfo.getCode().split("/")[0] + "_" + mAppInfo.getCode().split("/")[1]+ ".png";
+						new File(bmDir).getParentFile().mkdirs();
+						FileOutputStream fOut = new FileOutputStream(bmDir);
 						bitmap.compress(compressFormat, compressQuality, fOut);
 						fOut.flush();
 						fOut.close();
 					}
 					catch (FileNotFoundException e) {
 						if(debugEnabled) {
-							Log.e(LOG_TAG, "FileNotFoundException! Make sure the file isn't open in another app.");
+							Log.e(LOG_TAG, "FileNotFoundException! Make sure the file isn't open in another app and you have writing permissions in your manifest.");
 							e.printStackTrace();
 						}
 					}
@@ -439,6 +441,7 @@ public class PkRequestManager extends Static
 			if(debugEnabled)
 				Log.d(LOG_TAG, "Writing appfilter.xml...");
 			try {
+				new File(saveLoc2 + "/appfilter.xml").getParentFile().mkdirs();
 				FileWriter fstream = new FileWriter(saveLoc2 + "/appfilter.xml");
 				BufferedWriter out = new BufferedWriter(fstream);
 				out.write(xmlBuilder.toString());
@@ -449,7 +452,7 @@ public class PkRequestManager extends Static
 			}
 			catch (Exception e) {
 				if(debugEnabled) {
-					Log.d(LOG_TAG, "Error writing generated appfilter.xml!");
+					Log.d(LOG_TAG, "Error writing generated appfilter.xml! Make sure you have writing permissions in your AndroidManifest.xml");
 					e.printStackTrace();
 				}
 			}

@@ -3,11 +3,13 @@
     package="com.pk.requestmanager.sample"
     android:versionCode="1"
     android:versionName="1.0" >
-
+	
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    
     <uses-sdk
         android:minSdkVersion="15"
         android:targetSdkVersion="19" />
-
+	
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -22,6 +24,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.pk.requestmanager.sample.BasicActivity"
+            android:label="@string/basic" />
+        <activity
+            android:name="com.pk.requestmanager.sample.IntermediateActivity"
+            android:label="@string/intermediate" />
+        <activity
+            android:name="com.pk.requestmanager.sample.AdvancedActivity"
+            android:label="@string/advanced" />
+        <activity
+            android:name="com.pk.requestmanager.sample.AutomaticActivity"
+            android:label="@string/automatic" />
     </application>
 
 </manifest>
