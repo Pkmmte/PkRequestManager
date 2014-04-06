@@ -23,10 +23,10 @@ Download [the latest JAR][2] or grab via Maven:
 Usage & Integration
 --------
 Using the library is really simple, just look at the source code of the provided samples:
-* [Basic][4].
-* [Intermediate][5].
-* [Advanced][6].
-* [Automatic][7].
+* [Basic][4]
+* [Intermediate][5]
+* [Advanced][6]
+* [Automatic][7]
 
 See the [Quick Start][3] guide for more information on how to achieve a simple integration.
 
@@ -94,6 +94,7 @@ mRequestManager.getApps();
 You can also call `getInstalledApps()` to get a list of unfiltered apps or `getDefinedApps()` to get a String list of apps defined in your appfilter.
 
 
+
 ###Sending Request
 Just like loading, sending a request only requires one line of code.
 ```java
@@ -101,8 +102,25 @@ mRequestManager.sendRequest();
 ```
 Building up the request may take a while depending on the number of selected apps. I suggest you run this in a background thread or call `sendRequestAsync()` instead.
 Sending a request with this method works only if you have selected apps on the ArrayList you get from the `getApps()` method.
-*Note:* Due to issues starting the sendRequest intent from a background thread, please use `mRequestManager.setActivity(this)` right before sending the request or manually start the intent from the `onRequestFinished` interface.
 
+You may also use the following to automatically load and send the request:
+```java
+mRequestManager.sendAutomaticRequest();
+```
+Be sure to set any listeners to check the progress on this. As usual, I recommend you use `sendAutomaticRequestAsync()` instead.
+
+**Note:** Due to issues starting the sendRequest intent from a background thread, please use `mRequestManager.setActivity(this)` right before sending the request or manually start the intent from the `onRequestFinished` interface.
+
+
+###Event Listeners
+These are completely optional but very very useful. You can add event listeners to check for events.  They can be specially helpful when working with `Async` methods.
+The following event listeners are available:
+* AppLoadListener
+* InstalledAppLoadListener
+* AppFilterListener
+* SendRequestListener
+
+See more information about them in the [wiki][9].
 
 Developed By
 --------
@@ -152,3 +170,4 @@ License
  [6]: https://github.com/Pkmmte/PkRequestManager/blob/master/PkRequestManager-Sample/src/com/pk/requestmanager/sample/AdvancedActivity.java
  [7]: https://github.com/Pkmmte/PkRequestManager/blob/master/PkRequestManager-Sample/src/com/pk/requestmanager/sample/AutomaticActivity.java
  [8]: http://pkmmte.com//TODO
+ [9]: https://github.com/Pkmmte/PkRequestManager/wiki
