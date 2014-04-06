@@ -109,6 +109,7 @@ public class BasicActivity extends Activity
 		}
 	}
 	
+	// You should probably put this in a separate .java file
 	private class ListAdapter extends BaseAdapter
 	{
 		private Context mContext;
