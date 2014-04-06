@@ -30,19 +30,27 @@ See the Quick Start guides for more information on how to achieve a simple integ
 * [Quick Start: Sending Request](https://github.com/Pkmmte/PkRequestManager/wiki)
 * [Quick Start: Listeners](https://github.com/Pkmmte/PkRequestManager/wiki)
 
-* **Creating an instance_**
+**Creating an instance**
 To be able to do anything, you first need to create an instance. 
 I suggest you make it a global instance for more efficient use and shorter loading times.
 
 Called like this :
-
+```java
     PkRequestManager mRequestManager = PkRequestManager.getInstance(this);
-
+```java
 Developed By
 --------
 
 Pkmmte Xeleon - www.pkmmte.com
 
+<a href="https://plus.google.com/102226057091361048952">
+  <img alt="Follow me on Google+"
+       src="http://data.pkmmte.com/temp/social_google_plus_logo.png" />
+</a>
+<a href="https://www.linkedin.com/pub/pkmmte-xeleon/7a/409/b4b/">
+  <img alt="Follow me on LinkedIn"
+       src="http://data.pkmmte.com/temp/social_linkedin_logo.png" />
+</a>
 
 License
 --------
