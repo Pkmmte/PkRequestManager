@@ -16,6 +16,10 @@ gen/
 local.properties
 project.properties
 
+# Library Files
+PkRequestManager/libs
+PkRequestManager/AndroidManifest.xml
+
 # Eclipse project files
 .classpath
 .project
