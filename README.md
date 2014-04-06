@@ -22,68 +22,86 @@ Download [the latest JAR][2] or grab via Maven:
 
 Usage & Integration
 --------
+Using the library is really simple, just look at the source code of the provided samples:
+* [Basic][4].
+* [Intermediate][5].
+* [Advanced][6].
+* [Automatic][7].
 
-See the Quick Start guides for more information on how to achieve a simple integration:
+See the [Quick Start][3] guide for more information on how to achieve a simple integration.
 
-* [Quick Start](https://github.com/Pkmmte/PkRequestManager/wiki)
-* [Quick Start: Loading Apps](https://github.com/Pkmmte/PkRequestManager/wiki)
-* [Quick Start: Sending Request](https://github.com/Pkmmte/PkRequestManager/wiki)
-* [Quick Start: Listeners](https://github.com/Pkmmte/PkRequestManager/wiki)
 
 **Important:** *This library requires the `WRITE_EXTERNAL_STORAGE` permission if you want to attach a .zip file containing requested app icons or a generated appfilter.xml!*
 ```xml
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 ```
 
-##Creating an instance
+###Creating an instance
 To be able to do anything, you first need to create an instance. 
 I suggest you make it a global instance for more efficient use and shorter loading times.
 
 Called like this :
 ```java
-    PkRequestManager mRequestManager = PkRequestManager.getInstance(this);
+PkRequestManager mRequestManager = PkRequestManager.getInstance(this);
 ```
 
-##Customize
+###Customize
 This Manager class was made to be as flexible as possible. The only requirement is to set your email address(es). Everything else is set to default.
 ```java
-    mRequestManager.setSettings(new RequestSettings.Builder()
-		.addEmailAddress("iconrequests@example.net")	// Email where the request will be sent to
-		.addEmailAddress("example@gmail.com")	// You can specify multiple emails to send it to
-		.emailSubject("[MyIconPack] App Icon Request")	// Email Subject
-		.emailPrecontent("These apps are missing on my phone:\n\n")	// Text before the main app information
-		.saveLocation(Environment.getExternalStorageDirectory().getAbsolutePath() + "/mytheme/.icon_request")	// Location to where the .zips and temporary files will be saved
-		.appfilterName("appfilter.xml")	// Specify your appfilter.xml name if it's different from the standard. This will be used to filter out apps from the list.
-		.compressFormat(PkRequestManager.PNG)	// Compression format for the attached app icons
-		.appendInformation(true)	// Choose whether or not you'd like to receive information about the user's device such as OS version, manufacturer, model number, build, etc.
-		.createAppfilter(true)	// True if you'd like to automatically generate an appfilter.xml for the requested apps
-		.createZip(true)	// True if you want to receive app icons with the email
-		.filterAutomatic(true)	// True if you want apps you support in your appfilter.xml to be filtered out from automatic requests
-		.filterDefined(true)	// True if you don't want apps you already defined in your appfilter.xml to show up in the app list
-		.byteBuffer(2048)	// Buffer size in bytes for writing to memory.
-		.compressQuality(100)	// Compression quality for attached app icons
-		.build());
+mRequestManager.setSettings(new RequestSettings.Builder()
+	.addEmailAddress("iconrequests@example.net")	// Email where the request will be sent to
+	.addEmailAddress("example@gmail.com")	// You can specify multiple emails to send it to
+	.emailSubject("[MyIconPack] App Icon Request")	// Email Subject
+	.emailPrecontent("These apps are missing on my phone:\n\n")	// Text before the main app information
+	.saveLocation(Environment.getExternalStorageDirectory().getAbsolutePath() + "/mytheme/.icon_request")	// Location to where the .zips and temporary files will be saved
+	.appfilterName("appfilter.xml")	// Specify your appfilter.xml name if it's different from the standard. This will be used to filter out apps from the list.
+	.compressFormat(PkRequestManager.PNG)	// Compression format for the attached app icons
+	.appendInformation(true)	// Choose whether or not you'd like to receive information about the user's device such as OS version, manufacturer, model number, build, etc.
+	.createAppfilter(true)	// True if you'd like to automatically generate an appfilter.xml for the requested apps
+	.createZip(true)	// True if you want to receive app icons with the email
+	.filterAutomatic(true)	// True if you want apps you support in your appfilter.xml to be filtered out from automatic requests
+	.filterDefined(true)	// True if you don't want apps you already defined in your appfilter.xml to show up in the app list
+	.byteBuffer(2048)	// Buffer size in bytes for writing to memory.
+	.compressQuality(100)	// Compression quality for attached app icons
+	.build());
 ```
 
-[See here][3] for more.
+[See here][8] for more.
 
 
-##Loading apps
+###Loading
 To load a list of apps, all you need to do is call the `loadApps()` method like so:
 ```java
-    mRequestManager.loadApps();
+mRequestManager.loadApps();
 ```
 This will keep in mind your settings and filter out any apps if you have `filterDefined` enabled.
 Loading can take a while if the user has hundreds or thousands of apps installed so make sure to call it from a background thread. You can also call the `Async` variant of the method.
 ```java
-    mRequestManager.loadAppsAsync();
+mRequestManager.loadAppsAsync();
 ```
 This will load apps in a parallel background thread. It's safe to call this multiple times at once. The PkRequestManager only executes it if it's not already running.
 
 You can also choose to load apps only if they're not already loaded with the following line of code:
 ```java
-    mRequestManager.loadAppsIfEmpty();
+mRequestManager.loadAppsIfEmpty();
 ```
+
+
+After all is loaded, you can retrieve the list of apps like this:
+```java
+mRequestManager.getApps();
+```
+You can also call `getInstalledApps()` to get a list of unfiltered apps or `getDefinedApps()` to get a String list of apps defined in your appfilter.
+
+
+###Sending Request
+Just like loading, sending a request only requires one line of code.
+```java
+mRequestManager.sendRequest();
+```
+Building up the request may take a while depending on the number of selected apps. I suggest you run this in a background thread or call `sendRequestAsync()` instead.
+Sending a request with this method works only if you have selected apps on the ArrayList you get from the `getApps()` method.
+*Note:* Due to issues starting the sendRequest intent from a background thread, please use `mRequestManager.setActivity(this)` right before sending the request or manually start the intent from the `onRequestFinished` interface.
 
 
 Developed By
@@ -127,5 +145,10 @@ License
 
 
  [1]: http://pkmmte.com//TODO
- [2]: http://pkmmte.com//TODO
- [3]: http://pkmmte.com//TODO
+ [2]: https://github.com/Pkmmte/PkRequestManager/releases/download/v0.9/pkrequestmanager-0.9.jar
+ [3]: https://github.com/Pkmmte/PkRequestManager/wiki
+ [4]: https://github.com/Pkmmte/PkRequestManager/blob/master/PkRequestManager-Sample/src/com/pk/requestmanager/sample/BasicActivity.java
+ [5]: https://github.com/Pkmmte/PkRequestManager/blob/master/PkRequestManager-Sample/src/com/pk/requestmanager/sample/IntermediateActivity.java
+ [6]: https://github.com/Pkmmte/PkRequestManager/blob/master/PkRequestManager-Sample/src/com/pk/requestmanager/sample/AdvancedActivity.java
+ [7]: https://github.com/Pkmmte/PkRequestManager/blob/master/PkRequestManager-Sample/src/com/pk/requestmanager/sample/AutomaticActivity.java
+ [8]: http://pkmmte.com//TODO
