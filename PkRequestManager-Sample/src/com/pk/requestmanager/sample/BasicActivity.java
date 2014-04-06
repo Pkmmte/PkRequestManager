@@ -53,8 +53,8 @@ public class BasicActivity extends Activity
 		.addEmailAddress("example@gmail.com")
 		.build());
 		
-		// Load the list of apps. This should normally be done asynchronously.
-		mRequestManager.loadApps();
+		// Load the list of apps if none are loaded. This should normally be done asynchronously.
+		mRequestManager.loadAppsIfEmpty();
 		
 		// Get the list of apps
 		mApps = mRequestManager.getApps();

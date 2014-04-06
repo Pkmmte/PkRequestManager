@@ -8,7 +8,9 @@ import com.pk.requestmanager.PkRequestManager;
 import com.pk.requestmanager.RequestSettings;
 
 import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -20,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -226,9 +229,14 @@ public class IntermediateActivity extends Activity implements AppLoadListener
 				convertView = inflater.inflate(R.layout.activity_intermediate_item, null);
 				
 				holder = new ViewHolder();
-				holder.imgIcon = (ImageView) convertView.findViewById(R.id.imgIcon);
+				holder.txtCode = (TextView) convertView.findViewById(R.id.txtCode);
 				holder.txtName = (TextView) convertView.findViewById(R.id.txtName);
-				holder.chkSelected = (CheckBox) convertView.findViewById(R.id.chkSelected);
+				holder.imgIcon = (ImageView) convertView.findViewById(R.id.imgIcon);
+				holder.chkSelected = (ImageView) convertView.findViewById(R.id.chkSelected);
+
+				holder.Card = (FrameLayout) convertView.findViewById(R.id.Card);
+				holder.btnContainer = (FrameLayout) convertView.findViewById(R.id.btnIconContainer);
+				holder.bgSelected = convertView.findViewById(R.id.bgSelected);
 				
 				convertView.setTag(holder);
 			}
@@ -237,17 +245,51 @@ public class IntermediateActivity extends Activity implements AppLoadListener
 			}
 
 			holder.txtName.setText(mApp.getName());
+			holder.txtCode.setText(mApp.getCode());
 			holder.imgIcon.setImageDrawable(mApp.getImage());
-			holder.chkSelected.setChecked(mApp.isSelected());
+			
+			if(mApp.isSelected()) {
+				selectCard(true, holder.Card);
+				holder.bgSelected.setVisibility(View.VISIBLE);
+				holder.chkSelected.setVisibility(View.VISIBLE);
+			}
+			else {
+				selectCard(false, holder.Card);
+				holder.bgSelected.setVisibility(View.GONE);
+				holder.chkSelected.setVisibility(View.GONE);
+			}
 			
 			return convertView;
 		}
 		
+		@SuppressLint("NewApi")
+		@SuppressWarnings("deprecation")
+		private void selectCard(boolean Selected, FrameLayout Card)
+		{
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+				if (Selected)
+					Card.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.card_selected));
+				else
+					Card.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.card_bg));
+			}
+			else {
+				if (Selected)
+					Card.setBackground(mContext.getResources().getDrawable(R.drawable.card_selected));
+				else
+					Card.setBackground(mContext.getResources().getDrawable(R.drawable.card_bg));
+			}
+		}
+		
 		private class ViewHolder
 		{
-			public ImageView imgIcon;
+			public TextView txtCode;
 			public TextView txtName;
-			public CheckBox chkSelected;
+			public ImageView imgIcon;
+			public ImageView chkSelected;
+
+			public FrameLayout Card;
+			public FrameLayout btnContainer;
+			public View bgSelected;
 		}
 	}
 }
