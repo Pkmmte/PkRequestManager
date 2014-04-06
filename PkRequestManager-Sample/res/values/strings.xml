@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">PkRequestManager-Sample</string>
+    <string name="basic">Basic</string>
+    <string name="intermediate">Intermediate</string>
+    <string name="advanced">Advanced</string>
+    <string name="automatic">Automatic</string>
+
+</resources>

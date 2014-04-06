@@ -1,0 +1,5 @@
+<resources>
+
+    <dimen name="button_margins">8dp</dimen>
+
+</resources>
