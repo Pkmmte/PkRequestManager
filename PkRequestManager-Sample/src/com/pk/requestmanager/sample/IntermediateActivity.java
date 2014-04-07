@@ -123,7 +123,7 @@ public class IntermediateActivity extends Activity implements AppLoadListener
 		// Enable debugging. Disable this during production!
 		mRequestManager.setDebugging(true);
 		
-		// Set your custom settings. Email address is required! Everything else is set to default.
+		// Set your custom settings. Email address is required! Everything else is set to default if not specified.
 		mRequestManager.setSettings(new RequestSettings.Builder()
 		.addEmailAddress("example@gmail.com")
 		.addEmailAddress("iconrequests@example.net") // You can add multiple emails
