@@ -1,19 +1,28 @@
 package com.pkmmte.requestmanager.sample;
 
 import java.util.List;
+import java.util.Locale;
 
+import android.animation.Animator;
+import android.animation.Animator.AnimatorListener;
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.GridView;
@@ -25,9 +34,10 @@ import com.pk.requestmanager.AppInfo;
 import com.pk.requestmanager.AppLoadListener;
 import com.pk.requestmanager.PkRequestManager;
 import com.pk.requestmanager.RequestSettings;
-import com.pkmmte.requestmanager.sample.R;
+import com.pk.requestmanager.SendRequestListener;
+import com.pkmmte.requestmanager.sample.QuickScroll.Scrollable;
 
-public class AdvancedActivity extends Activity implements AppLoadListener
+public class AdvancedActivity extends Activity implements OnItemClickListener, AppLoadListener, SendRequestListener
 {
 	// Request Manager
 	private PkRequestManager mRequestManager;
@@ -48,6 +58,7 @@ public class AdvancedActivity extends Activity implements AppLoadListener
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_advanced);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 		
 		// Initialize your layout views
 		initViews();
@@ -69,6 +80,10 @@ public class AdvancedActivity extends Activity implements AppLoadListener
 		
 		// Asynchronously load apps if they're not already loaded.
 		mRequestManager.loadAppsIfEmptyAsync();
+		
+		// Get a list of apps and try populating, even if they're not loaded
+		mApps = mRequestManager.getApps();
+		populateGrid();
 	}
 	
 	@Override
@@ -151,133 +166,286 @@ public class AdvancedActivity extends Activity implements AppLoadListener
 	
 	private void setListeners()
 	{
-		
+		mRequestManager.addAppLoadListener(this);
+		mRequestManager.addSendRequestListener(this);
 	}
 	
 	private void removeListeners()
 	{
-		
+		mRequestManager.removeAppLoadListener(this);
+		mRequestManager.removeSendRequestListener(this);
 	}
-
-	@Override
-	public void onAppLoaded() {
-		// TODO Auto-generated method stub
+	
+	private void populateGrid()
+	{
+		// Return if app list is null or empty
+		if(mApps == null || mApps.size() == 0)
+			return;
 		
+		mAdapter = new RequestAdapter(this, mApps);
+		mGrid.setAdapter(mAdapter);
+		mGrid.setOnItemClickListener(this);
+		
+		mScroll.init(QuickScroll.TYPE_INDICATOR_WITH_HANDLE, mGrid, mAdapter, QuickScroll.STYLE_HOLO);
+		mScroll.setFixedSize(1);
+		mScroll.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 48);
+		mScroll.setVisibility(View.VISIBLE);
 	}
-
+	
 	@Override
-	public void onAppLoading(int arg0, int arg1) {
-		// TODO Auto-generated method stub
-		
+	public void onItemClick(AdapterView<?> parent, View view, int position,	long id)
+	{
+		mAdapter.animateView(position, mGrid);
+		AppInfo mApp = mApps.get(position);
+		mApp.setSelected(!mApp.isSelected());
+		mApps.set(position, mApp);
 	}
-
+	
 	@Override
-	public void onAppPreload() {
-		// TODO Auto-generated method stub
-		
+	public void onAppPreload()
+	{
+		// TODO
+	}
+	
+	@Override
+	public void onAppLoading(int status, int progress)
+	{
+		// TODO
+	}
+	
+	@Override
+	public void onAppLoaded()
+	{
+		// TODO
+	}
+	
+	@Override
+	public void onRequestStart(boolean automatic)
+	{
+		// TODO
+	}
+	
+	@Override
+	public void onRequestBuild(boolean automatic, int progress)
+	{
+		// TODO
+	}
+	
+	@Override
+	public void onRequestFinished(boolean automatic, boolean intentSuccessful, Intent intent)
+	{
+		// TODO
 	}
 	
 	// You should probably put this in a separate .java file
-		private class RequestAdapter extends BaseAdapter
+	private class RequestAdapter extends BaseAdapter implements Scrollable
+	{
+		private Context mContext;
+		private List<AppInfo> mApps;
+		
+		public RequestAdapter(Context context, List<AppInfo> apps)
 		{
-			private Context mContext;
-			private List<AppInfo> mApps;
+			this.mContext = context;
+			this.mApps = apps;
+		}
+		
+		@Override
+		public int getCount()
+		{
+			return mApps.size();
+		}
+
+		@Override
+		public AppInfo getItem(int position)
+		{
+			return mApps.get(position);
+		}
+
+		@Override
+		public long getItemId(int position)
+		{
+			return position;
+		}
+		
+		@Override
+		public String getIndicatorForPosition(int childposition, int groupposition)
+		{
+			return Character.toString(mApps.get(childposition).getName().charAt(0)).toUpperCase(Locale.getDefault());
+		}
+		
+		@Override
+		public int getScrollPosition(int childposition, int groupposition)
+		{
+			return childposition;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent)
+		{
+			ViewHolder holder;
+			AppInfo mApp = mApps.get(position);
 			
-			public RequestAdapter(Context context, List<AppInfo> apps)
+			if (convertView == null)
 			{
-				this.mContext = context;
-				this.mApps = apps;
-			}
-			
-			@Override
-			public int getCount()
-			{
-				return mApps.size();
-			}
-
-			@Override
-			public AppInfo getItem(int position)
-			{
-				return mApps.get(position);
-			}
-
-			@Override
-			public long getItemId(int position)
-			{
-				return position;
-			}
-
-			@Override
-			public View getView(int position, View convertView, ViewGroup parent)
-			{
-				ViewHolder holder;
-				AppInfo mApp = mApps.get(position);
+				LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				convertView = inflater.inflate(R.layout.activity_advanced_item, null);
 				
-				if (convertView == null)
-				{
-					LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-					convertView = inflater.inflate(R.layout.activity_intermediate_item, null);
-					
-					holder = new ViewHolder();
-					holder.txtCode = (TextView) convertView.findViewById(R.id.txtCode);
-					holder.txtName = (TextView) convertView.findViewById(R.id.txtName);
-					holder.imgIcon = (ImageView) convertView.findViewById(R.id.imgIcon);
-					holder.chkSelected = (ImageView) convertView.findViewById(R.id.chkSelected);
+				holder = new ViewHolder();
+				holder.txtCode = (TextView) convertView.findViewById(R.id.txtCode);
+				holder.txtName = (TextView) convertView.findViewById(R.id.txtName);
+				holder.imgIcon = (ImageView) convertView.findViewById(R.id.imgIcon);
+				holder.chkSelected = (ImageView) convertView.findViewById(R.id.chkSelected);
 
-					holder.Card = (FrameLayout) convertView.findViewById(R.id.Card);
-					holder.bgSelected = convertView.findViewById(R.id.bgSelected);
-					
-					convertView.setTag(holder);
-				}
-				else {
-					holder = (ViewHolder) convertView.getTag();
-				}
+				holder.Card = (FrameLayout) convertView.findViewById(R.id.Card);
+				holder.btnContainer = (FrameLayout) convertView.findViewById(R.id.btnIconContainer);
+				holder.bgSelected = convertView.findViewById(R.id.bgSelected);
+				
+				convertView.setTag(holder);
+			}
+			else {
+				holder = (ViewHolder) convertView.getTag();
+			}
 
-				holder.txtName.setText(mApp.getName());
-				holder.txtCode.setText(mApp.getCode());
-				holder.imgIcon.setImageDrawable(mApp.getImage());
-				
-				if(mApp.isSelected()) {
-					selectCard(true, holder.Card);
-					holder.bgSelected.setVisibility(View.VISIBLE);
-					holder.chkSelected.setVisibility(View.VISIBLE);
-				}
-				else {
-					selectCard(false, holder.Card);
-					holder.bgSelected.setVisibility(View.GONE);
-					holder.chkSelected.setVisibility(View.GONE);
-				}
-				
-				return convertView;
+			holder.txtName.setText(mApp.getName());
+			holder.txtCode.setText(mApp.getCode());
+			holder.imgIcon.setImageDrawable(mApp.getImage());
+			
+			if(mApp.isSelected()) {
+				selectCard(true, holder.Card);
+				holder.bgSelected.setVisibility(View.VISIBLE);
+				holder.chkSelected.setVisibility(View.VISIBLE);
+			}
+			else {
+				selectCard(false, holder.Card);
+				holder.bgSelected.setVisibility(View.GONE);
+				holder.chkSelected.setVisibility(View.GONE);
 			}
 			
-			@SuppressLint("NewApi")
-			@SuppressWarnings("deprecation")
-			private void selectCard(boolean Selected, FrameLayout Card)
-			{
-				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-					if (Selected)
-						Card.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.card_selected));
-					else
-						Card.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.card_bg));
-				}
-				else {
-					if (Selected)
-						Card.setBackground(mContext.getResources().getDrawable(R.drawable.card_selected));
-					else
-						Card.setBackground(mContext.getResources().getDrawable(R.drawable.card_bg));
-				}
+			return convertView;
+		}
+		
+		@SuppressLint("NewApi")
+		@SuppressWarnings("deprecation")
+		private void selectCard(boolean Selected, FrameLayout Card)
+		{
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+				if (Selected)
+					Card.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.card_selected));
+				else
+					Card.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.card_bg));
 			}
-			
-			private class ViewHolder
-			{
-				public TextView txtCode;
-				public TextView txtName;
-				public ImageView imgIcon;
-				public ImageView chkSelected;
-
-				public FrameLayout Card;
-				public View bgSelected;
+			else {
+				if (Selected)
+					Card.setBackground(mContext.getResources().getDrawable(R.drawable.card_selected));
+				else
+					Card.setBackground(mContext.getResources().getDrawable(R.drawable.card_bg));
 			}
 		}
+		
+		public void animateView(int position, GridView grid)
+		{
+			View v = grid.getChildAt(position - grid.getFirstVisiblePosition());
+
+			ViewHolder holder = new ViewHolder();
+			holder.Card = (FrameLayout) v.findViewById(R.id.Card);
+			holder.btnContainer = (FrameLayout) v.findViewById(R.id.btnIconContainer);
+			holder.imgIcon = (ImageView) v.findViewById(R.id.imgIcon);
+			holder.chkSelected = (ImageView) v.findViewById(R.id.chkSelected);
+			holder.bgSelected = v.findViewById(R.id.bgSelected);
+
+			if (mApps.get(position).isSelected())
+				animateAppDeselected(holder);
+			else
+				animateAppSelected(holder);
+
+		}
+		
+		private void animateAppSelected(final ViewHolder holderFinal)
+		{
+			// Declare AnimatorSets
+			final AnimatorSet animOut = (AnimatorSet) AnimatorInflater
+					.loadAnimator(mContext, R.anim.card_flip_right_out);
+			final AnimatorSet animIn = (AnimatorSet) AnimatorInflater.loadAnimator(
+					mContext, R.anim.card_flip_left_in);
+			animOut.setTarget(holderFinal.btnContainer);
+			animIn.setTarget(holderFinal.btnContainer);
+			animOut.addListener(new AnimatorListener() {
+				@Override
+				public void onAnimationCancel(Animator animation) {
+					// Nothing
+				}
+
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					selectCard(true, holderFinal.Card);
+					holderFinal.bgSelected.setVisibility(View.VISIBLE);
+					holderFinal.chkSelected.setVisibility(View.VISIBLE);
+					animIn.start();
+				}
+
+				@Override
+				public void onAnimationRepeat(Animator animation) {
+					// Nothing
+				}
+
+				@Override
+				public void onAnimationStart(Animator animation) {
+					selectCard(false, holderFinal.Card);
+					holderFinal.bgSelected.setVisibility(View.GONE);
+					holderFinal.chkSelected.setVisibility(View.GONE);
+				}
+			});
+			animOut.start();
+		}
+
+		private void animateAppDeselected(final ViewHolder holderFinal)
+		{
+			// Declare AnimatorSets
+			final AnimatorSet animOut = (AnimatorSet) AnimatorInflater
+					.loadAnimator(mContext, R.anim.card_flip_left_out);
+			final AnimatorSet animIn = (AnimatorSet) AnimatorInflater.loadAnimator(
+					mContext, R.anim.card_flip_right_in);
+			animOut.setTarget(holderFinal.btnContainer);
+			animIn.setTarget(holderFinal.btnContainer);
+			animOut.addListener(new AnimatorListener() {
+				@Override
+				public void onAnimationCancel(Animator animation) {
+					// Nothing
+				}
+
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					selectCard(false, holderFinal.Card);
+					holderFinal.bgSelected.setVisibility(View.GONE);
+					holderFinal.chkSelected.setVisibility(View.GONE);
+					animIn.start();
+				}
+
+				@Override
+				public void onAnimationRepeat(Animator animation) {
+					// Nothing
+				}
+
+				@Override
+				public void onAnimationStart(Animator animation) {
+					selectCard(true, holderFinal.Card);
+					holderFinal.bgSelected.setVisibility(View.VISIBLE);
+					holderFinal.chkSelected.setVisibility(View.VISIBLE);
+				}
+			});
+			animOut.start();
+		}
+		
+		private class ViewHolder
+		{
+			public TextView txtCode;
+			public TextView txtName;
+			public ImageView imgIcon;
+			public ImageView chkSelected;
+
+			public FrameLayout Card;
+			public FrameLayout btnContainer;
+			public View bgSelected;
+		}
+	}
 }

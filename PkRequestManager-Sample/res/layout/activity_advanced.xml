@@ -14,7 +14,7 @@
         android:overScrollMode="never"
         android:scrollbars="none" />
 
-    <view.QuickScroll
+    <com.pkmmte.requestmanager.sample.QuickScroll
         android:id="@+id/quickScroll"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
