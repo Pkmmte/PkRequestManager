@@ -1,4 +1,4 @@
-package com.pk.requestmanager.sample;
+package com.pkmmte.requestmanager.sample;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

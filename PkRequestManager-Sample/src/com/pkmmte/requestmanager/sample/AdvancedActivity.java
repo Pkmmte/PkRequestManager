@@ -1,4 +1,4 @@
-package com.pk.requestmanager.sample;
+package com.pkmmte.requestmanager.sample;
 
 import java.util.List;
 
@@ -25,6 +25,7 @@ import com.pk.requestmanager.AppInfo;
 import com.pk.requestmanager.AppLoadListener;
 import com.pk.requestmanager.PkRequestManager;
 import com.pk.requestmanager.RequestSettings;
+import com.pkmmte.requestmanager.sample.R;
 
 public class AdvancedActivity extends Activity implements AppLoadListener
 {

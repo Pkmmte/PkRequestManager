@@ -1,4 +1,6 @@
-package com.pk.requestmanager.sample;
+package com.pkmmte.requestmanager.sample;
+
+import com.pkmmte.requestmanager.sample.R;
 
 import android.app.Activity;
 import android.content.Intent;

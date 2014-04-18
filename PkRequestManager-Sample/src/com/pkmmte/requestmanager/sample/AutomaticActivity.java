@@ -1,4 +1,4 @@
-package com.pk.requestmanager.sample;
+package com.pkmmte.requestmanager.sample;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -14,6 +14,7 @@ import com.pk.requestmanager.AppLoadListener;
 import com.pk.requestmanager.PkRequestManager;
 import com.pk.requestmanager.RequestSettings;
 import com.pk.requestmanager.SendRequestListener;
+import com.pkmmte.requestmanager.sample.R;
 
 public class AutomaticActivity extends Activity implements OnClickListener, AppLoadListener, SendRequestListener
 {
