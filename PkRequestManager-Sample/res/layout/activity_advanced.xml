@@ -1,8 +1,25 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    
 
-</LinearLayout>
+    <GridView
+        android:id="@+id/appGrid"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_toLeftOf="@+id/quickScroll"
+        android:fitsSystemWindows="true"
+        android:listSelector="@color/transparent"
+        android:numColumns="1"
+        android:overScrollMode="never"
+        android:scrollbars="none" />
+
+    <view.QuickScroll
+        android:id="@+id/quickScroll"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:fitsSystemWindows="true"
+        android:visibility="gone" />
+
+</RelativeLayout>
