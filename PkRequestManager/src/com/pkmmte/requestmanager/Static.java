@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.pk.requestmanager;
+package com.pkmmte.requestmanager;
 
 import java.util.List;
 

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.pk.requestmanager;
+package com.pkmmte.requestmanager;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

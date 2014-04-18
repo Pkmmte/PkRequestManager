@@ -22,15 +22,15 @@
  * SOFTWARE.
  */
 
-package com.pk.requestmanager;
+package com.pkmmte.requestmanager;
 
 /**
  * A listener that notifies you when a specific event is going on
- * regarding loading installed apps.
+ * regarding filtering apps.
  */
-public interface InstalledAppLoadListener
+public interface AppFilterListener
 {
-	public void onInstalledAppsPreload();
-	public void onInstalledAppsLoading(int progress);
-	public void onInstalledAppsLoaded();
+	public void onAppPrefilter();
+	public void onAppFiltering(int appfilterProgress, int filterProgress);
+	public void onAppFiltered();
 }
