@@ -2,13 +2,8 @@ package com.pk.requestmanager.sample;
 
 import java.util.List;
 
-import com.pk.requestmanager.AppInfo;
-import com.pk.requestmanager.AppLoadListener;
-import com.pk.requestmanager.PkRequestManager;
-import com.pk.requestmanager.RequestSettings;
-
-import android.app.Activity;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,14 +15,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
-import android.widget.CheckBox;
 import android.widget.FrameLayout;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.GridView;
+
+import com.pk.requestmanager.AppInfo;
+import com.pk.requestmanager.AppLoadListener;
+import com.pk.requestmanager.PkRequestManager;
+import com.pk.requestmanager.RequestSettings;
 
 public class IntermediateActivity extends Activity implements AppLoadListener
 {
@@ -235,7 +234,6 @@ public class IntermediateActivity extends Activity implements AppLoadListener
 				holder.chkSelected = (ImageView) convertView.findViewById(R.id.chkSelected);
 
 				holder.Card = (FrameLayout) convertView.findViewById(R.id.Card);
-				holder.btnContainer = (FrameLayout) convertView.findViewById(R.id.btnIconContainer);
 				holder.bgSelected = convertView.findViewById(R.id.bgSelected);
 				
 				convertView.setTag(holder);
@@ -288,7 +286,6 @@ public class IntermediateActivity extends Activity implements AppLoadListener
 			public ImageView chkSelected;
 
 			public FrameLayout Card;
-			public FrameLayout btnContainer;
 			public View bgSelected;
 		}
 	}
