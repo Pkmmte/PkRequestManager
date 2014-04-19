@@ -74,11 +74,6 @@ import android.util.Log;
 
 public class PkRequestManager extends Static
 {
-	//	TODO
-	//	- Completely rewrite RequestActivity to use this new manager
-	//	- Proper dialog for request options
-	//	- Package this manager into a .jar file and separate open source project
-	
 	// General Public Constants
 	public static final CompressFormat PNG = CompressFormat.PNG;
 	public static final CompressFormat JPEG = CompressFormat.JPEG;
@@ -1064,6 +1059,9 @@ public class PkRequestManager extends Static
 	 */
 	private void loadInstalledAppInfo()
 	{
+		// TODO Remove Test
+		long time = System.currentTimeMillis();
+		
 		// Create package manager and sort it
 		PackageManager pm = mContext.getPackageManager();
 		List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
@@ -1087,8 +1085,10 @@ public class PkRequestManager extends Static
 		
 		// Reuse app info object for memory purposes. Same goes for other string values.
 		AppInfo mAppInfo = null;
-		String launchIntent = null;
+		Intent launchIntent = null;
+		String launchStr = null;
 		String appCode = null;
+		String[] splitCode = null;
 
 		// Loops through the package manager to find all installed apps
 		final boolean filterDefined = mSettings.getFilterDefined();
@@ -1096,45 +1096,48 @@ public class PkRequestManager extends Static
 		int progress = 0;
 		for (ApplicationInfo packageInfo : packages) {
 			// Examine only valid packages
-			if (pm.getLaunchIntentForPackage(packageInfo.packageName) != null
-					&& !pm.getLaunchIntentForPackage(packageInfo.packageName)
-							.equals("")) {
-				// Loop through all listeners notifying them
-				progress = (int) (packages.indexOf(packageInfo) * MAX_PROGRESS) / numPackages;
-		        for(AppLoadListener mListener : mAppLoadListeners) {
-		        	mListener.onAppLoading(STATUS_LOADING_INSTALLED, filterDefined ? (int)(progress / 3) : progress);
-		        }
-		        for(InstalledAppLoadListener mListener : mInstalledAppLoadListeners) {
-		        	mListener.onInstalledAppsLoading(progress);
-		        }
-				
-				// Initialize reusable AppInfo object with default values
-				mAppInfo = new AppInfo();
-				
-				// Set app information from the package manager
-				mAppInfo.setImage(pm.getApplicationIcon(packageInfo));
-				mAppInfo.setName(pm.getApplicationLabel(packageInfo).toString());
-				
-				// Get app launch intent and trim it
-				launchIntent = pm.getLaunchIntentForPackage(packageInfo.packageName).toString().split("cmp=")[1];
-				appCode = launchIntent.substring(0, launchIntent.length() - 1);
-				if (appCode.split("/")[1].startsWith("."))
-					appCode = appCode.split("/")[0] + "/"
-							+ appCode.split("/")[0] + appCode.split("/")[1];
-				appCode = appCode.trim();
-				
-				// Set the trimmed app code
-				mAppInfo.setCode(appCode);
-
-				// Add new info to our ArrayList. Log commented out to reduce logcat spam.
-				mInstalledApps.add(mAppInfo);
-				//if(debugEnabled)
-				//	Log.d(LOG_TAG, "Added installed app:\n" + mAppInfo.toString());
-
-				// Nullify objects for memory
-				mAppInfo = null;
-				appCode = null;
+			launchIntent = pm.getLaunchIntentForPackage(packageInfo.packageName);
+			if (launchIntent == null || launchIntent.equals("")) {
+				continue;
 			}
+			
+			// Loop through all listeners notifying them
+			progress = (int) (packages.indexOf(packageInfo) * MAX_PROGRESS) / numPackages;
+	        for(AppLoadListener mListener : mAppLoadListeners) {
+	        	mListener.onAppLoading(STATUS_LOADING_INSTALLED, filterDefined ? (int)(progress / 3) : progress);
+	        }
+	        for(InstalledAppLoadListener mListener : mInstalledAppLoadListeners) {
+	        	mListener.onInstalledAppsLoading(progress);
+	        }
+			
+			// Initialize reusable AppInfo object with default values
+			mAppInfo = new AppInfo();
+			
+			// Set app information from the package manager
+			mAppInfo.setImage(packageInfo.loadIcon(pm));
+			mAppInfo.setName(packageInfo.loadLabel(pm).toString());
+			
+			// Get app launch intent and trim it
+			launchStr = launchIntent.toString().split("cmp=")[1];
+			appCode = launchStr.substring(0, launchStr.length() - 1);
+			splitCode = appCode.split("/");
+			if (splitCode[1].startsWith("."))
+				appCode = splitCode[0] + "/" + splitCode[0] + splitCode[1];
+			appCode = appCode.trim();
+			
+			// Set the trimmed app code
+			mAppInfo.setCode(appCode);
+
+			// Add new info to our ArrayList. Log commented out to reduce logcat spam.
+			mInstalledApps.add(mAppInfo);
+			//if(debugEnabled)
+			//	Log.d(LOG_TAG, "Added installed app:\n" + mAppInfo.toString());
+
+			// Nullify objects to make the job easier for the GC
+			mAppInfo = null;
+			launchStr = null;
+			appCode = null;
+			splitCode = null;
 		}
 		
 		// Loop through all listeners notifying them
@@ -1146,6 +1149,9 @@ public class PkRequestManager extends Static
             	mListener.onAppLoading(STATUS_LOADED, MAX_PROGRESS);
             }
         }
+        
+        // TODO Remove Test
+        Log.d(LOG_TAG, "Time Taken: " + (time - System.currentTimeMillis()));
 	}
 	
 	/**
@@ -1173,11 +1179,11 @@ public class PkRequestManager extends Static
 			// Check if app is already defined and filter it accordingly
 			if(!mDefinedApps.contains(mAppInfo.getCode())) {
 				mApps.add(mAppInfo);
-				if(debugEnabled)
-					Log.d(LOG_TAG, "Filtered IN : " + mAppInfo.getName());
+				//if(debugEnabled)
+				//	Log.d(LOG_TAG, "Filtered IN : " + mAppInfo.getName());
 			}
-			else if(debugEnabled)
-				Log.d(LOG_TAG, "Filtered OUT : " + mAppInfo.getName());
+			//else if(debugEnabled)
+			//	Log.d(LOG_TAG, "Filtered OUT : " + mAppInfo.getName());
 		}
 		
 		if(debugEnabled)
