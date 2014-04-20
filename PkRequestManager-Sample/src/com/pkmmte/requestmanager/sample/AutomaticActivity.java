@@ -10,11 +10,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-import com.pk.requestmanager.AppLoadListener;
-import com.pk.requestmanager.PkRequestManager;
-import com.pk.requestmanager.RequestSettings;
-import com.pk.requestmanager.SendRequestListener;
-import com.pkmmte.requestmanager.sample.R;
+import com.pkmmte.requestmanager.AppLoadListener;
+import com.pkmmte.requestmanager.PkRequestManager;
+import com.pkmmte.requestmanager.RequestSettings;
+import com.pkmmte.requestmanager.SendRequestListener;
 
 public class AutomaticActivity extends Activity implements OnClickListener, AppLoadListener, SendRequestListener
 {

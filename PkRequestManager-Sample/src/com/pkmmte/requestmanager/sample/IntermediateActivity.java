@@ -23,11 +23,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.pk.requestmanager.AppInfo;
-import com.pk.requestmanager.AppLoadListener;
-import com.pk.requestmanager.PkRequestManager;
-import com.pk.requestmanager.RequestSettings;
-import com.pkmmte.requestmanager.sample.R;
+import com.pkmmte.requestmanager.AppInfo;
+import com.pkmmte.requestmanager.AppLoadListener;
+import com.pkmmte.requestmanager.PkRequestManager;
+import com.pkmmte.requestmanager.RequestSettings;
 
 public class IntermediateActivity extends Activity implements AppLoadListener
 {
