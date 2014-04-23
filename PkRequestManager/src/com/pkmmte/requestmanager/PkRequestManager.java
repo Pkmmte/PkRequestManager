@@ -102,6 +102,9 @@ public class PkRequestManager extends Static
 	// Keep an activity instance for those moments you really need it
 	private Activity mActivity;
 	
+	// Keep track of how many requests were sent this session
+	private int numRequestsSent;
+	
 	// List of installed app info and already defined apps as well as filtered apps
 	private List<AppInfo> mApps;
 	private List<AppInfo> mInstalledApps;
@@ -165,6 +168,7 @@ public class PkRequestManager extends Static
 		this.debugEnabled = false;
 		this.mSettings = new RequestSettings();
 		this.mContext = context;
+		this.numRequestsSent = 0;
 		this.mApps = new ArrayList<AppInfo>();
 		this.mInstalledApps = new ArrayList<AppInfo>();
 		this.mDefinedApps = new ArrayList<String>();
@@ -504,10 +508,13 @@ public class PkRequestManager extends Static
 			intentSuccessful = false;
 		}
 		
+		// Increase the number of sent requests, even if it failed
+		numRequestsSent++;
+		
 		// Loop through all listeners notifying them
-        for(SendRequestListener mListener : mSendRequestListeners) {
-        	mListener.onRequestFinished(automatic, intentSuccessful, intent);
-        }
+		for(SendRequestListener mListener : mSendRequestListeners) {
+			mListener.onRequestFinished(automatic, intentSuccessful, intent);
+		}
 	}
 	
 	/**
@@ -885,6 +892,17 @@ public class PkRequestManager extends Static
 	}
 	
 	/**
+	 * Returns the number of requests sent during this session. 
+	 * This counts canceled & failed requests.
+	 * 
+	 * @return
+	 */
+	public int getNumRequestSent()
+	{
+		return this.numRequestsSent;
+	}
+	
+	/**
 	 * Returns an integer count with the total number of 
 	 * apps currently selected. This keeps in mind your settings 
 	 * and will not work if you don't have the proper reference.
@@ -901,6 +919,28 @@ public class PkRequestManager extends Static
 		}
 		
 		return count;
+	}
+	
+	/**
+	 * Selects all AppInfo Objects in the list
+	 */
+	public void selectAll()
+	{
+		List<AppInfo> mAppList = getApps();
+		for(AppInfo mApp : mAppList) {
+			mApp.setSelected(true);
+		}
+	}
+	
+	/**
+	 * Deselects all AppInfo Objects in the list
+	 */
+	public void deselectAll()
+	{
+		List<AppInfo> mAppList = getApps();
+		for(AppInfo mApp : mAppList) {
+			mApp.setSelected(false);
+		}
 	}
 	
 	/**
@@ -1059,9 +1099,6 @@ public class PkRequestManager extends Static
 	 */
 	private void loadInstalledAppInfo()
 	{
-		// TODO Remove Test
-		long time = System.currentTimeMillis();
-		
 		// Create package manager and sort it
 		PackageManager pm = mContext.getPackageManager();
 		List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
@@ -1149,9 +1186,6 @@ public class PkRequestManager extends Static
             	mListener.onAppLoading(STATUS_LOADED, MAX_PROGRESS);
             }
         }
-        
-        // TODO Remove Test
-        Log.d(LOG_TAG, "Time Taken: " + (time - System.currentTimeMillis()));
 	}
 	
 	/**
