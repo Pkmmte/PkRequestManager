@@ -5,6 +5,7 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -191,11 +192,13 @@ public class IntermediateActivity extends Activity implements AppLoadListener
 	{
 		private Context mContext;
 		private List<AppInfo> mApps;
+		private Resources mRes;
 		
 		public RequestAdapter(Context context, List<AppInfo> apps)
 		{
 			this.mContext = context;
 			this.mApps = apps;
+			this.mRes = context.getResources();
 		}
 		
 		@Override
@@ -222,40 +225,31 @@ public class IntermediateActivity extends Activity implements AppLoadListener
 			ViewHolder holder;
 			AppInfo mApp = mApps.get(position);
 			
+			// Inflate layout if null, otherwise use current ViewHolder
 			if (convertView == null)
 			{
 				LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				convertView = inflater.inflate(R.layout.activity_intermediate_item, null);
 				
 				holder = new ViewHolder();
+				holder.Card = (FrameLayout) convertView.findViewById(R.id.Card);
 				holder.txtCode = (TextView) convertView.findViewById(R.id.txtCode);
 				holder.txtName = (TextView) convertView.findViewById(R.id.txtName);
 				holder.imgIcon = (ImageView) convertView.findViewById(R.id.imgIcon);
-				holder.chkSelected = (ImageView) convertView.findViewById(R.id.chkSelected);
-
-				holder.Card = (FrameLayout) convertView.findViewById(R.id.Card);
-				holder.bgSelected = convertView.findViewById(R.id.bgSelected);
 				
 				convertView.setTag(holder);
 			}
 			else {
 				holder = (ViewHolder) convertView.getTag();
 			}
-
+			
+			// Set the app's name & code
 			holder.txtName.setText(mApp.getName());
 			holder.txtCode.setText(mApp.getCode());
-			holder.imgIcon.setImageDrawable(mApp.getImage());
 			
-			if(mApp.isSelected()) {
-				selectCard(true, holder.Card);
-				holder.bgSelected.setVisibility(View.VISIBLE);
-				holder.chkSelected.setVisibility(View.VISIBLE);
-			}
-			else {
-				selectCard(false, holder.Card);
-				holder.bgSelected.setVisibility(View.GONE);
-				holder.chkSelected.setVisibility(View.GONE);
-			}
+			// Set selection/icon
+			holder.imgIcon.setImageDrawable(mApp.isSelected() ? mRes.getDrawable(R.drawable.ic_selected) : mApp.getImage());
+			selectCard(mApp.isSelected(), holder.Card);
 			
 			return convertView;
 		}
@@ -264,29 +258,21 @@ public class IntermediateActivity extends Activity implements AppLoadListener
 		@SuppressWarnings("deprecation")
 		private void selectCard(boolean Selected, FrameLayout Card)
 		{
+			// Use new API beyond Jelly Bean but keep compatibility with ICS
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-				if (Selected)
-					Card.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.card_selected));
-				else
-					Card.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.card_bg));
+				Card.setBackgroundDrawable(Selected ? mRes.getDrawable(R.drawable.card_bg_selected) : mRes.getDrawable(R.drawable.card_bg));
 			}
 			else {
-				if (Selected)
-					Card.setBackground(mContext.getResources().getDrawable(R.drawable.card_selected));
-				else
-					Card.setBackground(mContext.getResources().getDrawable(R.drawable.card_bg));
+				Card.setBackground(Selected ? mRes.getDrawable(R.drawable.card_bg_selected) : mRes.getDrawable(R.drawable.card_bg));
 			}
 		}
 		
 		private class ViewHolder
 		{
+			public FrameLayout Card;
 			public TextView txtCode;
 			public TextView txtName;
 			public ImageView imgIcon;
-			public ImageView chkSelected;
-
-			public FrameLayout Card;
-			public View bgSelected;
 		}
 	}
 }

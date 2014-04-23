@@ -2,13 +2,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:ignore="MangledCRLF" >
+    tools:ignore="MangledCRLF,ContentDescription" >
 
     <FrameLayout
         android:id="@+id/Card"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/card_bg_pressed"
+        android:background="@drawable/card_bg"
         android:foreground="@drawable/card_selector_transparent"
         tools:ignore="UselessParent" >
 
@@ -19,30 +19,10 @@
             android:baselineAligned="false"
             android:orientation="horizontal" >
 
-            <FrameLayout
+            <ImageView
+                android:id="@+id/imgIcon"
                 android:layout_width="64dp"
-                android:layout_height="64dp"
-                tools:ignore="ContentDescription" >
-
-                <ImageView
-                    android:id="@+id/imgIcon"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
-                <View
-                    android:id="@+id/bgSelected"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/black_50"
-                    android:visibility="gone" />
-
-                <ImageView
-                    android:id="@+id/chkSelected"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/ic_selected"
-                    android:visibility="gone" />
-            </FrameLayout>
+                android:layout_height="64dp" />
 
             <RelativeLayout
                 android:layout_width="0dp"
