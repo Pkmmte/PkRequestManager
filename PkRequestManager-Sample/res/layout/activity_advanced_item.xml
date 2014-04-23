@@ -8,7 +8,6 @@
         android:id="@+id/Card"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/card_bg_pressed"
         android:foreground="@drawable/card_selector_transparent"
         tools:ignore="UselessParent" >
 
@@ -21,8 +20,8 @@
 
             <FrameLayout
                 android:id="@+id/btnIconContainer"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
+                android:layout_width="@dimen/app_icon_size_large"
+                android:layout_height="@dimen/app_icon_size_large"
                 tools:ignore="ContentDescription" >
 
                 <ImageView
@@ -38,10 +37,10 @@
                     android:visibility="gone" />
 
                 <ImageView
-                    android:id="@+id/chkSelected"
+                    android:id="@+id/imgSelected"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:src="@drawable/ic_selected"
+                    android:src="@drawable/ic_selected_white"
                     android:visibility="gone" />
             </FrameLayout>
 
@@ -61,7 +60,8 @@
                     android:layout_alignParentTop="true"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:textColor="@color/list_title_color"
+                    android:text="App Name"
+                    android:textColor="@color/pk_text"
                     android:textSize="@dimen/grid_title_text" />
 
                 <TextView
@@ -71,9 +71,11 @@
                     android:layout_alignParentLeft="true"
                     android:layout_below="@+id/txtName"
                     android:ellipsize="end"
+                    android:fontFamily="sans-serif-light"
                     android:maxLines="2"
                     android:minLines="2"
-                    android:textColor="@color/list_desc_color"
+                    android:text="sadasdas\nasdasdasdsadasdasdasdasdasdasdasdasdasdasdasaxxxxxxsd"
+                    android:textColor="@color/pk_text"
                     android:textSize="@dimen/grid_desc_text" />
             </RelativeLayout>
         </LinearLayout>

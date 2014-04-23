@@ -8,10 +8,20 @@
     <string name="automatic">Automatic</string>
 
     <string name="search">Search</string>
-    <string name="submit">Submit</string>
+    <string name="send">Send Request</string>
     
     <string name="building_request">Building Request&#8230;</string>
     <string name="none_selected">No apps are selected!</string>
+    <string name="select_all">Select All</string>
+    <string name="deselect_all">Deselect All</string>
     <string name="send_auto_request">Send Automatic Request</string>
     <string name="auto_button_description">Pressing this button will automatically load apps and send them as a request. A progress dialog will be shown. You may press the button as many times as you want, the library won\'t get confused. It\'ll continue with the current request instead of starting a new one.</string>
+    <string name="preparing_to_load">Preparing to load&#8230;</string>
+    <string name="num_apps_selected"># Apps Selected</string>
+    
+    <plurals name="num_apps_selected">
+        <item quantity="zero">No Apps Selected</item>
+        <item quantity="one">One App Selected</item>
+        <item quantity="other">%d Apps Selected</item>
+    </plurals>
 </resources>

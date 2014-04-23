@@ -1,25 +1,101 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:id="@+id/Loading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="visible" >
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/txtLoading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:fontFamily="sans-serif-light"
+            android:text="@string/preparing_to_load"
+            android:textColor="@color/pk_text"
+            android:textSize="20sp" />
+    </LinearLayout>
 
     <GridView
         android:id="@+id/appGrid"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@+id/selectInfo"
         android:layout_toLeftOf="@+id/quickScroll"
+        android:clipToPadding="false"
         android:fitsSystemWindows="true"
         android:listSelector="@color/transparent"
         android:numColumns="1"
         android:overScrollMode="never"
-        android:scrollbars="none" />
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:scrollbars="none"
+        android:visibility="gone" />
 
     <com.pkmmte.requestmanager.sample.QuickScroll
         android:id="@+id/quickScroll"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:layout_above="@+id/selectInfo"
         android:layout_alignParentRight="true"
         android:fitsSystemWindows="true"
         android:visibility="gone" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_above="@+id/selectInfo"
+        android:background="@drawable/shadow_bar" />
+
+    <LinearLayout
+        android:id="@+id/selectInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        android:gravity="right|center_vertical"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/txtNumSelected"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-light"
+            android:maxLines="1"
+            android:text="@string/num_apps_selected"
+            android:textColor="@color/pk_text"
+            android:textSize="20sp" />
+
+        <ImageButton
+            android:id="@+id/btnSelectAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector_transparent"
+            android:contentDescription="@string/select_all"
+            android:padding="4dp"
+            android:src="@drawable/ic_select_all" />
+
+        <ImageButton
+            android:id="@+id/btnDeselectAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector_transparent"
+            android:contentDescription="@string/deselect_all"
+            android:padding="4dp"
+            android:src="@drawable/ic_deselect_all" />
+    </LinearLayout>
 
 </RelativeLayout>
