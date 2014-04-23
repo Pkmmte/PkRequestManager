@@ -101,7 +101,7 @@ public class IntermediateActivity extends Activity implements AppLoadListener
 			case android.R.id.home:
 				finish();
 				return true;
-			case R.id.submitButton:
+			case R.id.send:
 				// Small workaround
 				mRequestManager.setActivity(this);
 				

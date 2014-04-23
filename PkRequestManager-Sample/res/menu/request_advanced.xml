@@ -7,8 +7,9 @@
         android:showAsAction="always"
         android:title="@string/search"/>
     <item
-        android:id="@+id/submit"
+        android:id="@+id/send"
+        android:icon="@drawable/ic_send"
         android:showAsAction="always"
-        android:title="@string/submit"/>
+        android:title="@string/send"/>
 
 </menu>

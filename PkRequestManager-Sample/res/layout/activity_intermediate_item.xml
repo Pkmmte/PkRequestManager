@@ -21,8 +21,8 @@
 
             <ImageView
                 android:id="@+id/imgIcon"
-                android:layout_width="64dp"
-                android:layout_height="64dp" />
+                android:layout_width="@dimen/app_icon_size_large"
+                android:layout_height="@dimen/app_icon_size_large" />
 
             <RelativeLayout
                 android:layout_width="0dp"
@@ -40,7 +40,7 @@
                     android:layout_alignParentTop="true"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:textColor="@color/list_title_color"
+                    android:textColor="@color/pk_text"
                     android:textSize="@dimen/grid_title_text" />
 
                 <TextView
@@ -52,7 +52,7 @@
                     android:ellipsize="end"
                     android:maxLines="2"
                     android:minLines="2"
-                    android:textColor="@color/list_desc_color"
+                    android:textColor="@color/pk_text"
                     android:textSize="@dimen/grid_desc_text" />
             </RelativeLayout>
         </LinearLayout>

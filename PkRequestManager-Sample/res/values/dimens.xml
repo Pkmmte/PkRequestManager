@@ -2,7 +2,9 @@
 
     <dimen name="button_margins">8dp</dimen>
     <dimen name="app_icon_size">48dp</dimen>
-	<dimen name="grid_desc_text">12sp</dimen>
-	<dimen name="grid_title_text">14sp</dimen>
+    <dimen name="app_icon_size_large">64dp</dimen>
+    
+	<dimen name="grid_title_text">18sp</dimen>
+	<dimen name="grid_desc_text">14sp</dimen>
 
 </resources>
