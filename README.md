@@ -1,13 +1,13 @@
 PkRequestManager
 ================
 
-A powerful, yet simple, tool which helps make it easy to load and sending application icon requests for Android
+A helpful, yet simple, tool which makes it easy to load and send application icon requests for Android
 
 For more information, please see [the wiki][1]
 
 Try out the sample application:
 
-<a href="https://play.google.com/store/apps/details?id=com.pk">
+<a href="https://play.google.com/store/apps/details?id=com.pkmmte.requestmanager.sample">
   <img alt="Android app on Google Play"
        src="https://developer.android.com/images/brand/en_app_rgb_wo_45.png" />
 </a>
@@ -131,13 +131,17 @@ You can enable debug log messages using this line:
 mRequestManager.setDebugging(true);
 ```
 This shows significant events in your logcat and explains errors that may happen. (If any)
-Please don't leave this enable during production. You don't want to spam your user's logcat, do you?
+Please don't leave this enabled during production. You wouldn't want to spam your users' logcat, would you?
 
 
 Developed By
 --------
 
 Pkmmte Xeleon - www.pkmmte.com
+
+<a href='https://pledgie.com/campaigns/25009'>
+  <img alt='Click here to lend your support to: PkRequestManager and make a donation at pledgie.com !'         		       src='https://pledgie.com/campaigns/25009.png?skin_name=chrome' border='0' >
+</a>
 
 <a href="https://plus.google.com/102226057091361048952">
   <img alt="Follow me on Google+"
