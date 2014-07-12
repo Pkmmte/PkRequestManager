@@ -58,6 +58,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -424,6 +425,16 @@ public class PkRequestManager extends Static
 			emailBuilder.append("\nDevice: " + Build.DEVICE);
 			emailBuilder.append("\nManufacturer: " + Build.MANUFACTURER);
 			emailBuilder.append("\nModel (and Product): " + Build.MODEL + " (" + Build.PRODUCT + ")");
+			
+			try {
+				PackageInfo appInfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
+				emailBuilder.append("\nApp Version Name: " + appInfo.versionName);
+				emailBuilder.append("\nApp Version Code: " + appInfo.versionCode);
+			}
+			catch(Exception e) {
+				if(debugEnabled)
+					Log.d(LOG_TAG, "Unable to append app version name/code...");
+			}
 		}
 		
 		// Return if no apps were selected
