@@ -43,24 +43,25 @@ import java.util.Locale;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
-
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Bitmap.Config;
@@ -70,6 +71,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 
@@ -387,8 +389,15 @@ public class PkRequestManager extends Static
 				
 				// Save drawable if we're going to compress into a zip later
 				if(createZip) {
+					// Attempt to use highest density drawable available
+					Drawable appImage = getHighResDrawable(mAppInfo);
+					
+					// Fall back to regular drawable if unable to retrieve higher res
+					if(appImage == null)
+						appImage = mAppInfo.getImage();
+					
 					// Convert drawable into a bitmap before saving it
-					Bitmap bitmap = drawableToBitmap(mAppInfo.getImage());
+					Bitmap bitmap = drawableToBitmap(appImage);
 					
 					// Write bitmap to storage as PNG
 					try {
@@ -1386,16 +1395,56 @@ public class PkRequestManager extends Static
 		if(path.exists()) {
 			File[] files = path.listFiles();
 			for(int i=0; i<files.length; i++) {
-				if(files[i].isDirectory()) {
+				if(files[i].isDirectory())
 					deleteDirectory(files[i]);
-				}
-				else {
+				else
 					files[i].delete();
-				}
 			}
 		}
 		
 		return(path.delete());
+	}
+	
+	/**
+	 * Attempts to retrieve the highest resolution icon 
+	 * available. Returns the high res drawable if successfull; 
+	 * null if unsuccessful.
+	 * 
+	 * @param app
+	 * @return
+	 */
+	@SuppressLint("InlinedApi")
+	private Drawable getHighResDrawable(AppInfo app)
+	{
+		PackageManager mPackageManager = mContext.getPackageManager();
+		ActivityInfo info;
+		Resources mRes;
+		
+		try {
+			info = mPackageManager.getActivityInfo(new ComponentName(app.getCode().split("/")[0], app.getCode().split("/")[1]), PackageManager.GET_META_DATA);
+			mRes = mPackageManager.getResourcesForApplication(info.applicationInfo);
+		}
+		catch (Exception e) {
+			if(debugEnabled)
+				Log.d(LOG_TAG, "Unable to retrieve ActivityInfo for app " + app.getName());
+			return null;
+		}
+		
+		if(mRes == null)
+			return null;
+		
+		try {
+			int iconId = info.getIconResource();
+			if(iconId == 0)
+				return null;
+			
+			return mRes.getDrawableForDensity(iconId, DisplayMetrics.DENSITY_XXXHIGH);
+		}
+		catch(Exception e) {
+			if(debugEnabled)
+				Log.d(LOG_TAG, "Unable trying to get density drawable for app" + app.getName());
+			return null;
+		}
 	}
 	
 	/**
