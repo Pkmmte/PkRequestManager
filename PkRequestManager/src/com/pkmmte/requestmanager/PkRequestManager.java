@@ -24,32 +24,6 @@
 
 package com.pkmmte.requestmanager;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
-import java.util.zip.ZipOutputStream;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -73,6 +47,35 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.Log;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipOutputStream;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 
 public class PkRequestManager extends Static
@@ -172,9 +175,9 @@ public class PkRequestManager extends Static
 		this.mSettings = new RequestSettings();
 		this.mContext = context;
 		this.numRequestsSent = 0;
-		this.mApps = new ArrayList<AppInfo>();
-		this.mInstalledApps = new ArrayList<AppInfo>();
-		this.mDefinedApps = new ArrayList<String>();
+		this.mApps = Collections.synchronizedList(new ArrayList<AppInfo>());
+		this.mInstalledApps = Collections.synchronizedList(new ArrayList<AppInfo>());
+		this.mDefinedApps = Collections.synchronizedList(new ArrayList<String>());
 		this.mInstalledAppLoadListeners = new ArrayList<InstalledAppLoadListener>();
 		this.mAppFilterListeners = new ArrayList<AppFilterListener>();
 		this.mAppLoadListeners = new ArrayList<AppLoadListener>();
@@ -380,11 +383,19 @@ public class PkRequestManager extends Static
 				emailBuilder.append("Code: " + mAppInfo.getCode() + "\n");
 				emailBuilder.append("Link: " + PLAY_LINK_BASE + mAppInfo.getCode().split("/")[0] + "\n");
 				emailBuilder.append("\n\n");
-				
+
+                ///defined iconName separately
+				String iconName = (convertDrawableName(mAppInfo.getName()));
+                final char firstChar = mAppInfo.getName().charAt(0);
+                if (firstChar >= '0' && firstChar <= '9') {
+                    ///make sure name does not start with a number
+                    iconName = "a_" + iconName;
+                }
+
 				// Generate appfilter content (if enabled)
 				if(createAppfilter) {
 					xmlBuilder.append("<!-- " + mAppInfo.getName() + " -->\n");
-					xmlBuilder.append("<item component=\"ComponentInfo{" + mAppInfo.getCode() + "}\" drawable=\"" + convertDrawableName(mAppInfo.getName()) + "\"/>" + "\n");			
+					xmlBuilder.append("<item component=\"ComponentInfo{" + mAppInfo.getCode() + "}\" drawable=\"" + iconName + "\"/>" + "\n");
 				}
 				
 				// Save drawable if we're going to compress into a zip later
@@ -401,8 +412,11 @@ public class PkRequestManager extends Static
 					
 					// Write bitmap to storage as PNG
 					try {
-						String bmDir = saveLoc2 + "/" + mAppInfo.getCode().split("/")[0] + "_" + mAppInfo.getCode().split("/")[1]+ ".png";
-						new File(bmDir).getParentFile().mkdirs();
+//						String bmDir = saveLoc2 + "/" + mAppInfo.getCode().split("/")[0] + "_" + mAppInfo.getCode().split("/")[1]+ ".png";
+						///name based on drawable
+						String bmDir = saveLoc2 + "/" + iconName + ".png";
+
+                        new File(bmDir).getParentFile().mkdirs();
 						FileOutputStream fOut = new FileOutputStream(bmDir);
 						bitmap.compress(compressFormat, compressQuality, fOut);
 						fOut.flush();
@@ -596,7 +610,7 @@ public class PkRequestManager extends Static
 	 * Warning: Do not run this on the main UI thread or you might get an ANR 
 	 * (Application Not Responding)! Use a background thread or call "sendAutomaticRequestAsync()" instead
 	 */
-	public void sendAutomaticRequest()
+	public synchronized void sendAutomaticRequest()
 	{
 		// Load list of apps, if not already loaded
 		if(mInstalledApps.size() == 0 || (mSettings.getFilterAutomatic() && (mApps.size() == 0 || mDefinedApps.size() == 0))) {
@@ -850,7 +864,7 @@ public class PkRequestManager extends Static
 	 * 
 	 * @return
 	 */
-	public boolean appsLoaded()
+	public synchronized boolean appsLoaded()
 	{
 		return !(mInstalledApps.size() == 0 || (mSettings.getFilterDefined() && (mApps.size() == 0 || mDefinedApps.size() == 0)));
 	}
@@ -862,7 +876,7 @@ public class PkRequestManager extends Static
 	 * 
 	 * @return
 	 */
-	public List<AppInfo> getApps()
+	public synchronized List<AppInfo> getApps()
 	{
 		if(mApps.size() == 0 || !mSettings.getFilterDefined())
 			return this.mInstalledApps;
@@ -1018,7 +1032,7 @@ public class PkRequestManager extends Static
 	 * defined app info. This helps filter out apps already 
 	 * supported in your theme.
 	 */
-	private void loadDefinedAppInfo()
+	private synchronized void loadDefinedAppInfo()
 	{
 		try{
 			// Initialize XmlPullParser and set the appfilter.xml (from assets) as the input
@@ -1117,7 +1131,7 @@ public class PkRequestManager extends Static
 	 * Loads locally installed apps. These are the ones that will 
 	 * eventually be requested.
 	 */
-	private void loadInstalledAppInfo()
+	private synchronized void loadInstalledAppInfo()
 	{
 		// Create package manager and sort it
 		PackageManager pm = mContext.getPackageManager();
@@ -1157,23 +1171,23 @@ public class PkRequestManager extends Static
 			if (launchIntent == null || launchIntent.equals("")) {
 				continue;
 			}
-			
+
 			// Loop through all listeners notifying them
 			progress = (int) (packages.indexOf(packageInfo) * MAX_PROGRESS) / numPackages;
-	        for(AppLoadListener mListener : mAppLoadListeners) {
-	        	mListener.onAppLoading(STATUS_LOADING_INSTALLED, filterDefined ? (int)(progress / 3) : progress);
-	        }
-	        for(InstalledAppLoadListener mListener : mInstalledAppLoadListeners) {
-	        	mListener.onInstalledAppsLoading(progress);
-	        }
-			
+			for (AppLoadListener mListener : mAppLoadListeners) {
+				mListener.onAppLoading(STATUS_LOADING_INSTALLED, filterDefined ? (int) (progress / 3) : progress);
+			}
+			for (InstalledAppLoadListener mListener : mInstalledAppLoadListeners) {
+				mListener.onInstalledAppsLoading(progress);
+			}
+
 			// Initialize reusable AppInfo object with default values
 			mAppInfo = new AppInfo();
-			
+
 			// Set app information from the package manager
 			mAppInfo.setImage(packageInfo.loadIcon(pm));
 			mAppInfo.setName(packageInfo.loadLabel(pm).toString());
-			
+
 			// Get app launch intent and trim it
 			launchStr = launchIntent.toString().split("cmp=")[1];
 			appCode = launchStr.substring(0, launchStr.length() - 1);
@@ -1181,7 +1195,7 @@ public class PkRequestManager extends Static
 			if (splitCode[1].startsWith("."))
 				appCode = splitCode[0] + "/" + splitCode[0] + splitCode[1];
 			appCode = appCode.trim();
-			
+
 			// Set the trimmed app code
 			mAppInfo.setCode(appCode);
 
@@ -1196,7 +1210,7 @@ public class PkRequestManager extends Static
 			appCode = null;
 			splitCode = null;
 		}
-		
+
 		// Loop through all listeners notifying them
         for(InstalledAppLoadListener mListener : mInstalledAppLoadListeners) {
         	mListener.onInstalledAppsLoaded();
@@ -1212,7 +1226,7 @@ public class PkRequestManager extends Static
 	 * Filters apps based on your appfilter components. 
 	 * All filtered apps are copied over to the "mApps" ArrayList.
 	 */
-	private void filterAppInfo()
+	private synchronized void filterAppInfo()
 	{
 		// Clear list of filtered apps before adding more
 		mApps.clear();
@@ -1477,7 +1491,7 @@ public class PkRequestManager extends Static
 	{
 		return (appName
 				.replaceAll("[^a-zA-Z0-9\\p{Z}]", "")	// Remove all special characters and symbols
-				.replaceFirst("^[0-9]+(?!$)", "")		// Remove all leading numbers unless they're all numbers
+				//.replaceFirst("^[0-9]+(?!$)", "")		// Remove all leading numbers unless they're all numbers
 				.toLowerCase(Locale.US)					// Turn everything into lower case
 				.replaceAll("\\p{Z}", "_"));			// Replace all kinds of spaces with underscores
 	}
